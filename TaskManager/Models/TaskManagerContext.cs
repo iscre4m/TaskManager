@@ -2,9 +2,9 @@
 
 namespace TaskManager.Models
 {
-    public sealed class TaskManagerDbContext : DbContext
+    public sealed class TaskManagerContext : DbContext
     {
-        public TaskManagerDbContext(DbContextOptions<TaskManagerDbContext> options)
+        public TaskManagerContext(DbContextOptions<TaskManagerContext> options)
             : base(options)
         {
             Database.EnsureCreated();

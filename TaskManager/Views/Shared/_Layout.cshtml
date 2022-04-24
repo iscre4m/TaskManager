@@ -1,11 +1,27 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-	<title>@ViewData["Title"]</title>
+	<title>Планировщик задач @ViewData["Title"]</title>
 	<meta name="content" content="width=device-width;initial-scale=1.0"/>
-	<link rel="stylesheet" asp-href-include="~/lib/bootstrap/dist/css/bootstrap.css" asp-append-version="true">
+	<link rel="stylesheet" asp-href-include="~/lib/bootstrap/dist/css/bootstrap.css" asp-append-version="true"/>
+	<link rel="stylesheet" asp-href-include="~/styles.css" asp-append-version="true"/>
 </head>
 <body>
-	@RenderBody()
+<header>
+	<nav class="navbar navbar-expand-lg bg-light navbar-light">
+		<div class="container-fluid">
+			<a class="navbar-brand" asp-controller="Home" asp-action="Index">Планировщик задач</a>
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link" asp-controller="Authentication" asp-action="SignUp">Регистрация</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" asp-controller="Authentication" asp-action="SignIn">Вход</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+</header>
+@RenderBody()
 </body>
 </html>

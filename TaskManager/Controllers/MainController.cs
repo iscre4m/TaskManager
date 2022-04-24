@@ -3,15 +3,15 @@ using TaskManager.Models;
 
 namespace TaskManager.Controllers
 {
-    public class HomeController : Controller
+    public class MainController : Controller
     {
         private readonly TaskManagerContext _context;
 
-        public HomeController(TaskManagerContext context)
+        public MainController(TaskManagerContext context)
         {
             _context = context;
         }
 
-        public IActionResult Index() => View();
+        public IActionResult App() => View();
     }
 }
