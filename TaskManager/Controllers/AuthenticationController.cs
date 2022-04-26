@@ -12,8 +12,7 @@ namespace TaskManager.Controllers
             _context = context;
         }
 
-        public IActionResult SignUp() => View();
-
-        public IActionResult SignIn() => View();
+        public IActionResult SignUp() => Redirect("/Main/App");
+        public IActionResult SignIn() => Redirect("/Main/App");
     }
 }

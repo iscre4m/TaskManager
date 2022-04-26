@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@model User
+
+<!DOCTYPE html>
 <html>
 <head>
 	<title>Планировщик задач @ViewData["Title"]</title>
@@ -13,17 +15,71 @@
 			<a class="navbar-brand" asp-controller="Home" asp-action="Index">Планировщик задач</a>
 			<ul class="navbar-nav">
 				<li class="nav-item">
-					<a class="nav-link" asp-controller="Authentication" asp-action="SignUp">Регистрация</a>
+					<a class="nav-link" data-bs-toggle="modal" data-bs-target="#signUpModal">Регистрация</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" asp-controller="Authentication" asp-action="SignIn">Вход</a>
+					<a class="nav-link" data-bs-toggle="modal" data-bs-target="#signInModal">Вход</a>
 				</li>
 			</ul>
 		</div>
 	</nav>
+	<div id="signUpModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Окно регистрации</h5>
+					<input type="button" class="btn-close" data-bs-dismiss="modal">
+				</div>
+				<div class="modal-body">
+					<form method="post" asp-controller="Authentication" asp-action="SignUp">
+						<div class="mb-3">
+							<label for="signUpLogin" class="form-label">Логин</label>
+							<input type="text" class="form-control" id="signUpLogin" asp-for="Login">
+						</div>
+						<div class="mb-3">
+							<label for="signUpPassword" class="form-label">Пароль</label>
+							<input type="password" class="form-control" id="signUpPassword" asp-for="Password">
+						</div>
+						<div class="mb-3">
+							<label for="passwordConfirm" class="form-label">Подтвердите пароль</label>
+							<input type="password" class="form-control" id="passwordConfirm">
+						</div>
+						<button type="submit" class="btn btn-outline-dark">Регистрация</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="signInModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Окно входа</h5>
+					<input type="button" class="btn-close" data-bs-dismiss="modal">
+				</div>
+				<div class="modal-body">
+					<form method="post" asp-controller="Authentication" asp-action="SignIn">
+						<div class="mb-3">
+							<label for="signInLogin" class="form-label">Логин</label>
+							<input type="text" class="form-control" id="signInLogin">
+						</div>
+						<div class="mb-3">
+							<label for="signInPassword" class="form-label">Пароль</label>
+							<input type="password" class="form-control" id="signInPassword">
+						</div>
+						<button type="submit" class="btn btn-outline-dark">Вход</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>	
 </header>
 <main>
 	@RenderBody()
 </main>
+<script src="~/lib/jquery/jquery/dist/jquery.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+<script src="~/lib/jquery/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
 </body>
 </html>
