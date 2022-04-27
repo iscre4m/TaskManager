@@ -66,19 +66,18 @@
 					<form id="signInForm" method="post" asp-controller="Authentication" asp-action="SignIn">
 						<div class="mb-3">
 							<label for="signInLogin" class="form-label">Логин</label>
-							<input type="text" class="form-control" id="signInLogin">
+							<input type="text" class="form-control" id="signInLogin" asp-for="SignInLogin">
 						</div>
 						<div class="mb-3">
 							<label for="signInPassword" class="form-label">Пароль</label>
-							<input type="password" class="form-control" id="signInPassword">
+							<input type="password" class="form-control" id="signInPassword" asp-for="SignInPassword">
 						</div>
 						<button type="submit" class="btn btn-outline-dark">Вход</button>
+						<div id="signInValidation"class="d-flex flex-column">
+							<span class="text-danger" asp-validation-for="SignInLogin"></span>
+							<span class="text-danger" asp-validation-for="SignInPassword"></span>
+						</div>
 					</form>
-					<div id="signInValidation"class="d-flex flex-column">
-						<span class="text-danger" asp-validation-for="Login"></span>
-						<span class="text-danger" asp-validation-for="Password"></span>
-						<span class="text-danger" asp-validation-for="PasswordConfirm"></span>
-					</div>
 				</div>
 			</div>
 		</div>
