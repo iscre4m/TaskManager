@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TaskManager.Models;
+using TaskManager.Data;
 
 namespace TaskManager.Controllers
 {
@@ -12,7 +12,14 @@ namespace TaskManager.Controllers
             _context = context;
         }
 
-        public IActionResult SignUp() => Redirect("/Main/App");
-        public IActionResult SignIn() => Redirect("/Main/App");
+        public IActionResult SignUp()
+        {
+            return Redirect("/Home/Index");
+        }
+
+        public IActionResult SignIn()
+        {
+            return Redirect("/Home/Index");
+        }
     }
 }

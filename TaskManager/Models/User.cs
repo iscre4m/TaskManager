@@ -14,10 +14,13 @@ namespace TaskManager.Models
 
         [Required(ErrorMessage = "Введите пароль")]
         [StringLength(30, MinimumLength = 8, ErrorMessage = "Длина пароля должна быть от 8 до 30 символов")]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         [NotMapped]
+        [Required(ErrorMessage = "Подтвердите пароль")]
         [Compare("Password", ErrorMessage = "Пароли не совпадают")]
+        [DataType(DataType.Password)]
         public string PasswordConfirm { get; set; }
 
         public List<Task> Tasks { get; set; }

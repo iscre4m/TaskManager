@@ -31,7 +31,7 @@
 					<input type="button" class="btn-close" data-bs-dismiss="modal">
 				</div>
 				<div class="modal-body">
-					<form method="post" asp-controller="Authentication" asp-action="SignUp">
+					<form id="signUpForm" method="post" asp-controller="Authentication" asp-action="SignUp">
 						<div class="mb-3">
 							<label for="signUpLogin" class="form-label">Логин</label>
 							<input type="text" class="form-control" id="signUpLogin" asp-for="Login">
@@ -42,9 +42,14 @@
 						</div>
 						<div class="mb-3">
 							<label for="passwordConfirm" class="form-label">Подтвердите пароль</label>
-							<input type="password" class="form-control" id="passwordConfirm">
+							<input type="password" class="form-control" id="passwordConfirm" asp-for="PasswordConfirm">
 						</div>
 						<button type="submit" class="btn btn-outline-dark">Регистрация</button>
+						<div id="signUpValidation" class="d-flex flex-column">
+							<span class="text-danger" asp-validation-for="Login"></span>
+							<span class="text-danger" asp-validation-for="Password"></span>
+							<span class="text-danger" asp-validation-for="PasswordConfirm"></span>
+						</div>
 					</form>
 				</div>
 			</div>
@@ -58,7 +63,7 @@
 					<input type="button" class="btn-close" data-bs-dismiss="modal">
 				</div>
 				<div class="modal-body">
-					<form method="post" asp-controller="Authentication" asp-action="SignIn">
+					<form id="signInForm" method="post" asp-controller="Authentication" asp-action="SignIn">
 						<div class="mb-3">
 							<label for="signInLogin" class="form-label">Логин</label>
 							<input type="text" class="form-control" id="signInLogin">
@@ -69,6 +74,11 @@
 						</div>
 						<button type="submit" class="btn btn-outline-dark">Вход</button>
 					</form>
+					<div id="signInValidation"class="d-flex flex-column">
+						<span class="text-danger" asp-validation-for="Login"></span>
+						<span class="text-danger" asp-validation-for="Password"></span>
+						<span class="text-danger" asp-validation-for="PasswordConfirm"></span>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -77,6 +87,7 @@
 <main>
 	@RenderBody()
 </main>
+<script src="~/scripts.js"></script>
 <script src="~/lib/jquery/jquery/dist/jquery.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
 <script src="~/lib/jquery/jquery-validation/dist/jquery.validate.js"></script>
