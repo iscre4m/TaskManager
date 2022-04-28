@@ -1,7 +1,4 @@
-﻿@{
-}
-
-<nav class="navbar navbar-expand-lg">
+﻿<nav class="navbar navbar-expand-lg">
 	<div class="container-fluid">
 		<div class="d-flex">
 			<form class="d-flex">
@@ -38,3 +35,9 @@
 		<h3 class="display-5 text-center">Completed Today</h3>
 	</div>
 </div>
+
+@section navItems {
+	<li class="nav-item">
+		<a class="nav-link" asp-controller="Authentication" asp-action="SignOut">Выход</a>
+	</li>
+}

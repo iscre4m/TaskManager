@@ -27,8 +27,8 @@ namespace TaskManager.Controllers
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-
-            return Redirect("/Home/Index");
+            
+            return RedirectToAction("App", "Main");
         }
 
         [HttpPost]
@@ -43,12 +43,17 @@ namespace TaskManager.Controllers
 
             if (_context.Users.First(u => u.Login == user.SignInLogin).Password == user.SignInPassword)
             {
-                return Redirect("/Home/Index");
+                return RedirectToAction("App", "Main");
             }
 
             ViewBag.Message = "Неверный пароль";
 
             return View("Error");
+        }
+
+        public new IActionResult SignOut()
+        {
+            return Redirect("/Home/Index");
         }
     }
 }

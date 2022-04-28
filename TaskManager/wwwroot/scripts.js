@@ -12,3 +12,4 @@
 
 document.getElementById("signUpModal").addEventListener("hidden.bs.modal", resetForms);
 document.getElementById("signInModal").addEventListener("hidden.bs.modal", resetForms);
+
