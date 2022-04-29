@@ -36,6 +36,8 @@ namespace TaskManager.Models
         public string SignInPassword { get; set; }
         #endregion
 
+        public bool IsSignedIn { get; set; }
+
         public List<Task> Tasks { get; set; }
 
         public User()

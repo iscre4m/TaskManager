@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using TaskManager.Data;
+using TaskManager.Models;
 
 namespace TaskManager.Controllers
 {
@@ -12,6 +15,16 @@ namespace TaskManager.Controllers
             _context = context;
         }
 
-        public IActionResult Index() => View();
+        public async Task<IActionResult> Index()
+        {
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+
+            if (user is not null)
+            {
+                return RedirectToAction("App", "Main");
+            }
+
+            return View();
+        }
     }
 }
