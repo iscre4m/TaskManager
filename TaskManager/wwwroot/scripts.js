@@ -1,15 +1,10 @@
-﻿let resetForms = () => {
-    document.getElementById("signUpForm").reset();
-    for (let item of document.getElementById("signUpValidation").childNodes) {
-        item.innerHTML = "";
-    }
+﻿function resetForms () {
+    $(document).find("form")[0].reset();
+    $(document).find("form")[1].reset();
+    $(this).find("span").empty();
+};
 
-    document.getElementById("signInForm").reset();
-    for (let item of document.getElementById("signInValidation").childNodes) {
-        item.innerHTML = "";
-    }
-}
-
-document.getElementById("signUpModal").addEventListener("hidden.bs.modal", resetForms);
-document.getElementById("signInModal").addEventListener("hidden.bs.modal", resetForms);
-
+$(function () {
+    $("#signUpModal").on("hidden.bs.modal", resetForms);
+    $("#signInModal").on("hidden.bs.modal", resetForms);
+});

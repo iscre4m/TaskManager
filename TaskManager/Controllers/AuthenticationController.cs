@@ -52,7 +52,7 @@ namespace TaskManager.Controllers
 
                 return View("Error");
             }
-
+            
             ViewBag.Message = "Пользователь не найден";
 
             return View("Error");
