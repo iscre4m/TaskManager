@@ -21,12 +21,20 @@ namespace TaskManager.Controllers
 
             if (user is not null)
             {
-                return View(user);
+                ViewBag.User = user;
+
+                return View();
             }
 
             ViewBag.Message = "Вы не вошли в аккаунт";
 
             return View("Error");
+        }
+
+        [HttpPost]
+        public IActionResult Add(Models.Task task)
+        {
+            return View("App");
         }
     }
 }

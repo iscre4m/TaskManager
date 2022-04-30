@@ -1,4 +1,6 @@
-﻿<nav class="navbar navbar-expand-lg">
+﻿@model TaskManager.Models.Task
+
+<nav class="navbar navbar-expand-lg">
 	<div class="container-fluid">
 		<div class="d-flex">
 			<form class="d-flex">
@@ -16,23 +18,39 @@
 		</div>
 		<ul class="navbar-nav">
 			<li class="nav-item">
-				<a class="nav-link me-2" href="#"><img class="icon" src="~/icons/add.ico" alt="add"/></a>
+				<a class="nav-link me-2" data-bs-toggle="modal" data-bs-target="#addModal"><img class="icon" src="~/icons/add.ico" alt="add"/></a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link me-2" href="#"><img class="icon" src="~/icons/edit.ico" alt="edit"/></a>
+				<a class="nav-link me-2"><img class="icon" src="~/icons/edit.ico" alt="edit"/></a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link me-2" href="#"><img class="icon" src="~/icons/remove.ico" alt="remove"/></a>
+				<a class="nav-link me-2"><img class="icon" src="~/icons/remove.ico" alt="remove"/></a>
 			</li>
 		</ul>
 	</div>
 </nav>
 <div class="container-fluid d-flex">
-	<div class="container border border-dark">
-		<h3 class="display-5 text-center">All Tasks</h3>
+	<div id="allTasks" class="container border border-dark">
 	</div>
-	<div class="container border-top border border-dark">
-		<h3 class="display-5 text-center">Completed Today</h3>
+	<div id="completedTodayTasks" class="container border-top border border-dark">
+	</div>
+</div>
+<div id="addModal" class="modal fade" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<input type="button" class="btn btn-close" data-bs-dismiss="modal"/>
+			</div>
+			<div class="modal-body">
+				<form id="addForm" method="post" asp-action="Add">
+					<div class="mb-3">
+						<label for="addDescription" class="form-label">Описание</label>
+						<input id="addDescription" type="text" class="form-control" asp-for="Description">
+					</div>
+					<button type="submit" class="btn btn-outline-dark">Добавить</button>
+				</form>
+			</div>
+		</div>
 	</div>
 </div>
 
