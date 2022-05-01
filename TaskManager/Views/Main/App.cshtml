@@ -47,7 +47,14 @@
 						<label for="addDescription" class="form-label">Описание</label>
 						<input id="addDescription" type="text" class="form-control" asp-for="Description">
 					</div>
+					<div class="mb-3">
+						<label for="addEndDate" class="form-label">Дата окончания</label>
+						<input id="addEndDate" type="date" class="form-control" asp-for="EndDate">
+					</div>
 					<button type="submit" class="btn btn-outline-dark">Добавить</button>
+					<div class="mb-3">
+						<span class="text-danger" asp-validation-for="Description"></span>
+					</div>
 				</form>
 			</div>
 		</div>
