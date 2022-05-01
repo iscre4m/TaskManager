@@ -51,6 +51,41 @@
 						<label for="addEndDate" class="form-label">Дата окончания</label>
 						<input id="addEndDate" type="date" class="form-control" asp-for="EndDate">
 					</div>
+					<div class="mb-3">
+						<label for="addPriority" class="form-label">Приоритет</label>
+						<select id="addPriority" class="form-control" asp-items="Html.GetEnumSelectList<Priority>()" asp-for="Priority"></select>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Подзадачи</label>
+						<ul id="subtasksList" class="list-group">
+						</ul>
+						<div class="d-flex">
+							<input id="addSubtask" type="text" class="form-control me-3">
+							<input id="addAddSubtask" type="button" class="btn btn-outline-dark" value="Добавить">
+						</div>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Хэштеги</label>
+						<ul id="hashtagsList" class="list-group">
+						</ul>
+						<div class="d-flex">
+							<input id="addHashtag" type="text" class="form-control me-3">
+							<input id="addAddHashtag" type="button" class="btn btn-outline-dark" value="Добавить">
+						</div>
+					</div>
+					<div class="mb-3">
+						<label for="addComment" class="form-label">Комментарий</label>
+						<input id="addComment" type="text" class="form-control" asp-for="Comment">
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Прикреплённыые файлы</label>
+						<ul id="attachmentsList" class="list-group">
+						</ul>
+						<div class="d-flex">
+							<input id="addAttachment" type="text" class="form-control me-3">
+							<input id="addAddAttachment" type="button" class="btn btn-outline-dark" value="Добавить">
+						</div>
+					</div>
 					<button type="submit" class="btn btn-outline-dark">Добавить</button>
 					<div class="mb-3">
 						<span class="text-danger" asp-validation-for="Description"></span>
