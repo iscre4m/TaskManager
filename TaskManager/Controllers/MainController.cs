@@ -41,5 +41,23 @@ namespace TaskManager.Controllers
 
             return RedirectToAction("App", "Main");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(Models.Task task)
+        {
+            _context.Tasks.Update(task);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("App", "Main");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Remove(Models.Task task)
+        {
+            _context.Tasks.Remove(task);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("App", "Main");
+        }
     }
 }
