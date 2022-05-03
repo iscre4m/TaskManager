@@ -1,4 +1,5 @@
-﻿@model TaskManager.Models.Task
+﻿@using Task = TaskManager.Models.Task
+@model TaskManager.Models.Task
 
 <nav class="navbar navbar-expand-lg">
 	<div class="container-fluid">
@@ -31,8 +32,24 @@
 </nav>
 <div class="container-fluid d-flex">
 	<div id="allTasks" class="container border border-dark">
+		<div class="d-flex flex-column">
+			@foreach (Task task in ViewBag.User.Tasks)
+			{
+				<div class="mb-1">
+					<span>@task.Description</span>
+					<span>@task.EndDate.ToShortDateString()</span>
+				</div>
+			}
+		</div>
 	</div>
 	<div id="completedTodayTasks" class="container border-top border border-dark">
+		@foreach (Task task in ViewBag.User.Tasks)
+		{
+			if (task.IsFinished && task.FinishDate.Date == DateTime.Today)
+			{
+				<span>@task.Description</span>
+			}
+		}
 	</div>
 </div>
 <div id="addModal" class="modal fade" tabindex="-1">
@@ -57,16 +74,16 @@
 					</div>
 					<div class="mb-3">
 						<label class="form-label">Подзадачи</label>
-						<ul id="subtasksList" class="list-group">
+						<ul id="addSubtasksList" class="list-group mb-1">
 						</ul>
 						<div class="d-flex">
-							<input id="addSubtask" type="text" class="form-control me-3">
-							<input id="addAddSubtask" type="button" class="btn btn-outline-dark" value="Добавить">
+								<input id="addSubtask" type="text" class="form-control me-3">
+								<input id="addAddSubtask" type="button" class="btn btn-outline-dark" value="Добавить">
 						</div>
 					</div>
 					<div class="mb-3">
 						<label class="form-label">Хэштеги</label>
-						<ul id="hashtagsList" class="list-group">
+						<ul id="addHashtagsList" class="list-group mb-1">
 						</ul>
 						<div class="d-flex">
 							<input id="addHashtag" type="text" class="form-control me-3">
@@ -78,8 +95,8 @@
 						<input id="addComment" type="text" class="form-control" asp-for="Comment">
 					</div>
 					<div class="mb-3">
-						<label class="form-label">Прикреплённыые файлы</label>
-						<ul id="attachmentsList" class="list-group">
+						<label class="form-label">Прикреплённые файлы</label>
+						<ul id="addAttachmentsList" class="list-group mb-1">
 						</ul>
 						<div class="d-flex">
 							<input id="addAttachment" type="text" class="form-control me-3">
@@ -87,7 +104,7 @@
 						</div>
 					</div>
 					<button type="submit" class="btn btn-outline-dark">Добавить</button>
-					<div class="mb-3">
+					<div>
 						<span class="text-danger" asp-validation-for="Description"></span>
 					</div>
 				</form>

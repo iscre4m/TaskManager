@@ -21,6 +21,7 @@ namespace TaskManager.Controllers
 
             if (user is not null)
             {
+                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
                 ViewBag.User = user;
 
                 return View();
@@ -32,9 +33,13 @@ namespace TaskManager.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(Models.Task task)
+        public async Task<IActionResult> Add(Models.Task task)
         {
-            return View("App");
+            await _context.Tasks.AddAsync(task);
+            (await _context.Users.FirstAsync(u => u.IsSignedIn == true)).Tasks.Add(task);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("App", "Main");
         }
     }
 }
