@@ -35,13 +35,27 @@
 		<div class="d-flex flex-column">
 			@foreach (Task task in ViewBag.Tasks)
 			{
-				<div class="mb-1">
-					<span>@task.Description</span>
-					<span>@task.EndDate.ToShortDateString()</span>
-					@foreach (Subtask subtask in task.Subtasks)
-					{
-						<span>@subtask.Description</span>
-					}
+				<div class=" d-flex flex-column mb-3">
+					<div>
+						<span>@task.Description</span>
+						до
+						<span>@task.EndDate.ToShortDateString()</span>
+					</div>
+					<div>
+						@if (task.Subtasks.Any())
+						{
+							<span>Подзадачи:</span>
+							<ul class="mb-0">
+								@foreach (Subtask subtask in task.Subtasks)
+								{
+									<li>@subtask.Description</li>
+								}
+							</ul>
+						}
+					</div>
+					<div>
+						@task.Priority приоритет
+					</div>
 				</div>
 			}
 		</div>

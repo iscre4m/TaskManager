@@ -36,7 +36,7 @@ $(function() {
         }
 
         let subtasksCount = $("#addSubtasksList").children().length;
-        const closeButtonId = `removeSubtask${subtasksCount}`;
+        const closeButtonId = `addRemoveSubtask${subtasksCount}`;
         
         $("#addSubtasksList").append(`<li class="list-group-item">
                                         <div class="d-flex justify-content-between">
@@ -67,7 +67,7 @@ $(function() {
             $("#addHashtag").val(`#${$("#addHashtag").val()}`);
         }
 
-        const closeButtonId = `removeHashtag${$("#addHashtagsList").children().length}`;
+        const closeButtonId = `addRemoveHashtag${$("#addHashtagsList").children().length}`;
 
         $("#addHashtagsList").append(`<li class="list-group-item">
                                         <div class="d-flex justify-content-between">
@@ -93,7 +93,7 @@ $(function() {
             }
         }
 
-        const closeButtonId = `removeAttachment${$("#addAttachmentsList").children().length}`;
+        const closeButtonId = `addRemoveAttachment${$("#addAttachmentsList").children().length}`;
 
         $("#addAttachmentsList").append(`<li class="list-group-item">
                                         <div class="d-flex justify-content-between">
@@ -106,5 +106,89 @@ $(function() {
         });
 
         $("#addAttachment").val("");
-    });    
+    });
+
+    $("#editAddSubtask").click(function() {
+        if ($("#editSubtask").val() === "") {
+            return;
+        }
+
+        for (let item of $("#editSubtasksList").children()) {
+            if (item.innerText === $("#editSubtask").val()) {
+                return;
+            }
+        }
+
+        let subtasksCount = $("#editSubtasksList").children().length;
+        const closeButtonId = `editRemoveSubtask${subtasksCount}`;
+
+        $("#editSubtasksList").append(`<li class="list-group-item">
+                                        <div class="d-flex justify-content-between">
+                                            <input type="hidden" name="Subtasks[${subtasksCount}].description" value="${$("#editSubtask").val()}">
+                                            ${$("#editSubtask").val()}
+                                            <input id="${closeButtonId}" type="button" class="btn-close">
+                                        </div>
+                                    </li>`);
+        $(`#${closeButtonId}`).click(function () {
+            $(this).parent().parent().remove();
+        });
+
+        $("#editSubtask").val("");
+    });
+
+    $("#editAddHashtag").click(function () {
+        if ($("#editHashtag").val() === "") {
+            return;
+        }
+
+        for (let item of $("#editHashtagsList").children()) {
+            if (item.innerText === `#${$("#editHashtag").val()}`) {
+                return;
+            }
+        }
+
+        if (!/#/.test($("#editHashtag").val())) {
+            $("#editHashtag").val(`#${$("#editHashtag").val()}`);
+        }
+
+        const closeButtonId = `editRemoveHashtag${$("#editHashtagsList").children().length}`;
+
+        $("#editHashtagsList").append(`<li class="list-group-item">
+                                        <div class="d-flex justify-content-between">
+                                            ${$("#editHashtag").val()}
+                                            <input id="${closeButtonId}" type="button" class="btn-close">
+                                        </div>
+                                    </li>`);
+        $(`#${closeButtonId}`).click(function () {
+            $(this).parent().parent().remove();
+        });
+
+        $("#editHashtag").val("");
+    });
+
+    $("#editAddAttachment").click(function () {
+        if ($("#editAttachment").val() === "") {
+            return;
+        }
+
+        for (let item of $("#editAttachmentsList").children()) {
+            if (item.innerText === $("#editAttachment").val()) {
+                return;
+            }
+        }
+
+        const closeButtonId = `editRemoveAttachment${$("#editAttachmentsList").children().length}`;
+
+        $("#editAttachmentsList").append(`<li class="list-group-item">
+                                        <div class="d-flex justify-content-between">
+                                            ${$("#editAttachment").val()}
+                                            <input id="${closeButtonId}" type="button" class="btn-close">
+                                        </div>
+                                    </li>`);
+        $(`#${closeButtonId}`).click(function () {
+            $(this).parent().parent().remove();
+        });
+
+        $("#editAttachment").val("");
+    });
 });
