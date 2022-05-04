@@ -4,6 +4,8 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+<<<<<<< HEAD
+=======
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.16" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.16">
@@ -18,4 +20,5 @@
     <Folder Include="wwwroot\lib\bootstrap\dist\js\" />
   </ItemGroup>
 
+>>>>>>> dev
 </Project>
