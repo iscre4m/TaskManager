@@ -19,11 +19,6 @@ namespace TaskManager.Controllers
 
         public async Task<IActionResult> App()
         {
-            if (ViewBag.User is not null)
-            {
-                return View();
-            }
-
             User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
 
             if (user is not null)
@@ -34,6 +29,7 @@ namespace TaskManager.Controllers
                     await _context.Entry(task).Collection("Subtasks").LoadAsync();
                 }
                 ViewBag.User = user;
+                ViewBag.Tasks = user.Tasks;
 
                 return View();
             }
@@ -97,6 +93,29 @@ namespace TaskManager.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction("App", "Main");
+        }
+
+        public async Task<IActionResult> Find(string description)
+        {
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+
+            if (user is null)
+            {
+                ViewBag.Message = "Вы не вошли в аккаунт";
+
+                return View("Error");
+            }
+
+            await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+            foreach (Models.Task task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
+            
+            ViewBag.User = user;
+            ViewBag.Tasks = _context.Tasks.Where(t => t.Description.Contains(description)).Include(t => t.Subtasks);
+
+            return View("App");
         }
     }
 }
