@@ -1,0 +1,226 @@
+﻿@using Task = TaskManager.Models.Task
+@model TaskManager.Models.Task
+
+<nav class="navbar navbar-expand-lg">
+	<div class="container-fluid">
+		<div class="d-flex">
+			<form class="d-flex" asp-action="Find">
+				<input class="form-control me-2" type="search" name="description">
+				<button class="btn btn-outline-dark" type="submit">Найти</button>
+			</form>
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link ms-2" href="#"><img class="icon" src="~/icons/calendar.ico" alt="calendar"/></a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link ms-2" href="#"><img class="icon" src="~/icons/filter.ico" alt="filter"/></a>
+				</li>
+			</ul>
+		</div>
+		<ul class="navbar-nav">
+			<li class="nav-item">
+				<a class="nav-link me-2" data-bs-toggle="modal" data-bs-target="#addModal"><img class="icon" src="~/icons/add.ico" alt="add"/></a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link me-2" data-bs-toggle="modal" data-bs-target="#editModal"><img class="icon" src="~/icons/edit.ico" alt="edit"/></a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link me-2" data-bs-toggle="modal" data-bs-target="#removeModal"><img class="icon" src="~/icons/remove.ico" alt="remove"/></a>
+			</li>
+		</ul>
+	</div>
+</nav>
+<div class="container-fluid d-flex">
+	<div id="allTasks" class="container border border-dark">
+		<div class="d-flex flex-column">
+			@foreach (Task task in ViewBag.Tasks)
+			{
+				<div class=" d-flex flex-column mb-3">
+					<div>
+						<span>@task.Description</span>
+						до
+						<span>@task.EndDate.ToShortDateString()</span>
+					</div>
+					<div>
+						@if (task.Subtasks.Any())
+						{
+							<span>Подзадачи:</span>
+							<ul class="mb-0">
+								@foreach (Subtask subtask in task.Subtasks)
+								{
+									<li>@subtask.Description</li>
+								}
+							</ul>
+						}
+					</div>
+					<div>
+						@task.Priority приоритет
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+	<div id="completedTodayTasks" class="container border-top border border-dark">
+		@foreach (Task task in ViewBag.User.Tasks)
+		{
+			if (task.IsFinished && task.FinishDate.Date == DateTime.Today)
+			{
+				<span>@task.Description</span>
+			}
+		}
+	</div>
+</div>
+<div id="addModal" class="modal fade" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<input type="button" class="btn btn-close" data-bs-dismiss="modal"/>
+			</div>
+			<div class="modal-body">
+				<form id="addForm" method="post" asp-action="Add">
+					<div class="mb-3">
+						<label for="addDescription" class="form-label">Описание</label>
+						<input id="addDescription" type="text" class="form-control" asp-for="Description">
+					</div>
+					<div class="mb-3">
+						<label for="addEndDate" class="form-label">Дата окончания</label>
+						<input id="addEndDate" type="date" class="form-control" asp-for="EndDate">
+					</div>
+					<div class="mb-3">
+						<label for="addPriority" class="form-label">Приоритет</label>
+						<select id="addPriority" class="form-control" asp-items="Html.GetEnumSelectList<Priority>()" asp-for="Priority"></select>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Подзадачи</label>
+						<ul id="addSubtasksList" class="list-group mb-1">
+						</ul>
+						<div class="d-flex">
+							<input id="addSubtask" type="text" class="form-control me-3">
+							<input id="addAddSubtask" type="button" class="btn btn-outline-dark" value="Добавить">
+						</div>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Хэштеги</label>
+						<ul id="addHashtagsList" class="list-group mb-1">
+						</ul>
+						<div class="d-flex">
+							<input id="addHashtag" type="text" class="form-control me-3">
+							<input id="addAddHashtag" type="button" class="btn btn-outline-dark" value="Добавить">
+						</div>
+					</div>
+					<div class="mb-3">
+						<label for="addComment" class="form-label">Комментарий</label>
+						<input id="addComment" type="text" class="form-control" asp-for="Comment">
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Прикреплённые файлы</label>
+						<ul id="addAttachmentsList" class="list-group mb-1">
+						</ul>
+						<div class="d-flex">
+							<input id="addAttachment" type="text" class="form-control me-3">
+							<input id="addAddAttachment" type="button" class="btn btn-outline-dark" value="Добавить">
+						</div>
+					</div>
+					<button type="submit" class="btn btn-outline-dark">Добавить</button>
+					<div>
+						<span class="text-danger" asp-validation-for="Description"></span>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="editModal" class="modal fade" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<input type="button" class="btn btn-close" data-bs-dismiss="modal"/>
+			</div>
+			<div class="modal-body">
+				<form id="editForm" method="post" asp-action="Edit">
+					<div class="mb-3">
+						<select class="form-select" asp-for="Id">
+							@foreach (Task task in ViewBag.User.Tasks)
+							{
+								<option value="@task.Id">@task.Description</option>
+							}
+						</select>
+					</div>
+					<div class="mb-3">
+						<label for="editDescription" class="form-label">Описание</label>
+						<input id="editDescription" type="text" class="form-control" asp-for="Description">
+					</div>
+					<div class="mb-3">
+						<label for="editEndDate" class="form-label">Дата окончания</label>
+						<input id="editEndDate" type="date" class="form-control" asp-for="EndDate">
+					</div>
+					<div class="mb-3">
+						<label for="editPriority" class="form-label">Приоритет</label>
+						<select id="editPriority" class="form-control" asp-items="Html.GetEnumSelectList<Priority>()" asp-for="Priority"></select>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Подзадачи</label>
+						<ul id="editSubtasksList" class="list-group mb-1">
+						</ul>
+						<div class="d-flex">
+							<input id="editSubtask" type="text" class="form-control me-3">
+							<input id="editAddSubtask" type="button" class="btn btn-outline-dark" value="Добавить">
+						</div>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Хэштеги</label>
+						<ul id="editHashtagsList" class="list-group mb-1">
+						</ul>
+						<div class="d-flex">
+							<input id="editHashtag" type="text" class="form-control me-3">
+							<input id="editAddHashtag" type="button" class="btn btn-outline-dark" value="Добавить">
+						</div>
+					</div>
+					<div class="mb-3">
+						<label for="editComment" class="form-label">Комментарий</label>
+						<input id="editComment" type="text" class="form-control" asp-for="Comment">
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Прикреплённые файлы</label>
+						<ul id="editAttachmentsList" class="list-group mb-1">
+						</ul>
+						<div class="d-flex">
+							<input id="editAttachment" type="text" class="form-control me-3">
+							<input id="editAddAttachment" type="button" class="btn btn-outline-dark" value="Добавить">
+						</div>
+					</div>
+					<button type="submit" class="btn btn-outline-dark">Редактировать</button>
+					<div>
+						<span class="text-danger" asp-validation-for="Description"></span>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="removeModal" class="modal fade" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<input type="button" class="btn btn-close" data-bs-dismiss="modal"/>
+			</div>
+			<div class="modal-body">
+				<form id="removeForm" method="post" asp-action="Remove">
+					<select class="form-select mb-3" asp-for="Id">
+						@foreach(Task task in ViewBag.User.Tasks)
+						{
+							<option value="@task.Id">@task.Description</option>
+						}
+					</select>
+					<button type="submit" class="btn btn-outline-dark">Удалить</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section navItems {
+	<li class="nav-item">
+		<a class="nav-link" asp-controller="Authentication" asp-action="SignOut">Выход</a>
+	</li>
+}
