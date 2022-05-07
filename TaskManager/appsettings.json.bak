@@ -1,0 +1,16 @@
+{
+<<<<<<< HEAD
+=======
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=IDEAPAD;Database=TaskManagerDb;Trusted_Connection=True;"
+  },
+>>>>>>> dev
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "AllowedHosts": "*"
+}
