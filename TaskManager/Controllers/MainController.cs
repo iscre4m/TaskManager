@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,10 +24,11 @@ namespace TaskManager.Controllers
             if (user is not null)
             {
                 await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-                foreach(Models.Task task in user.Tasks)
+                foreach (Models.Task task in user.Tasks)
                 {
                     await _context.Entry(task).Collection("Subtasks").LoadAsync();
                 }
+
                 ViewBag.User = user;
                 ViewBag.Tasks = user.Tasks;
 
@@ -54,7 +56,7 @@ namespace TaskManager.Controllers
         public async Task<IActionResult> Add(Models.Task task)
         {
             Models.Task queryTask = await _context.Tasks.FirstOrDefaultAsync(t => t.Description == task.Description);
-            
+
             if (queryTask is not null)
             {
                 ViewBag.Message = "Задача с таким описанием уже существует";
@@ -83,11 +85,12 @@ namespace TaskManager.Controllers
         {
             Models.Task queryTask = await _context.Tasks.FindAsync(task.Id);
             await _context.Entry(queryTask).Collection("Subtasks").LoadAsync();
-            
+
             foreach (Subtask subtask in queryTask.Subtasks)
             {
                 _context.Subtasks.Remove(subtask);
             }
+
             _context.Tasks.Remove(queryTask);
             await _context.SaveChangesAsync();
 
@@ -105,16 +108,60 @@ namespace TaskManager.Controllers
                 return View("Error");
             }
 
+            if (description is null)
+            {
+                ViewBag.Message = "Введите описание задачи";
+
+                return View("Error");
+            }
+
             await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
             foreach (Models.Task task in user.Tasks)
             {
                 await _context.Entry(task).Collection("Subtasks").LoadAsync();
             }
-            
+
             ViewBag.User = user;
-            ViewBag.Tasks = _context.Tasks.Where(t => t.Description.Contains(description)).Include(t => t.Subtasks);
+            ViewBag.Tasks = user.Tasks.Where(t => t.Description.Contains(description));
 
             return View("App");
         }
+
+        //public async Task<IActionResult> Filter()
+        //{
+        //    User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+
+        //    if (user is null)
+        //    {
+        //        ViewBag.Message = "Вы не вошли в аккаунт";
+
+        //        return View("Error");
+        //    }
+
+        //    await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+        //    foreach (Models.Task task in user.Tasks)
+        //    {
+        //        await _context.Entry(task).Collection("Subtasks").LoadAsync();
+        //    }
+
+        //    ViewBag.User = user;
+        //    ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date == DateTime.Today);
+
+        //    return View("App");
+        //}
+
+        //public async Task<IActionResult> Sort()
+        //{
+        //    User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+
+        //    if (user is null)
+        //    {
+        //        ViewBag.Message = "Вы не вошли в аккаунт";
+
+        //        return View("Error");
+        //    }
+
+        //    return View("App");
+        //}
     }
 }
