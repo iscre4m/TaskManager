@@ -127,41 +127,100 @@ namespace TaskManager.Controllers
             return View("App");
         }
 
-        //public async Task<IActionResult> Filter()
-        //{
-        //    User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+        #region Фильтры
+        
+        public async Task<IActionResult> FilterByDay()
+        {
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
 
-        //    if (user is null)
-        //    {
-        //        ViewBag.Message = "Вы не вошли в аккаунт";
+            if (user is null)
+            {
+                ViewBag.Message = "Вы не вошли в аккаунт";
 
-        //        return View("Error");
-        //    }
+                return View("Error");
+            }
 
-        //    await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-        //    foreach (Models.Task task in user.Tasks)
-        //    {
-        //        await _context.Entry(task).Collection("Subtasks").LoadAsync();
-        //    }
+            await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+            foreach (Models.Task task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
 
-        //    ViewBag.User = user;
-        //    ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date == DateTime.Today);
+            ViewBag.User = user;
+            ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date == DateTime.Today);
 
-        //    return View("App");
-        //}
+            return View("App");
+        }
 
-        //public async Task<IActionResult> Sort()
-        //{
-        //    User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+        public async Task<IActionResult> FilterByWeek()
+        {
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
 
-        //    if (user is null)
-        //    {
-        //        ViewBag.Message = "Вы не вошли в аккаунт";
+            if (user is null)
+            {
+                ViewBag.Message = "Вы не вошли в аккаунт";
 
-        //        return View("Error");
-        //    }
+                return View("Error");
+            }
 
-        //    return View("App");
-        //}
+            await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+            foreach (Models.Task task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
+
+            ViewBag.User = user;
+            ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddDays(7));
+
+            return View("App");
+        }
+
+        public async Task<IActionResult> FilterByMonth()
+        {
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+
+            if (user is null)
+            {
+                ViewBag.Message = "Вы не вошли в аккаунт";
+
+                return View("Error");
+            }
+
+            await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+            foreach (Models.Task task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
+
+            ViewBag.User = user;
+            ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddMonths(1));
+
+            return View("App");
+        }
+
+        public async Task<IActionResult> FilterByYear()
+        {
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+
+            if (user is null)
+            {
+                ViewBag.Message = "Вы не вошли в аккаунт";
+
+                return View("Error");
+            }
+
+            await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+            foreach (Models.Task task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
+
+            ViewBag.User = user;
+            ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddYears(1));
+
+            return View("App");
+        }
+        
+        #endregion
     }
 }

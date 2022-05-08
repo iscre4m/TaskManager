@@ -9,11 +9,29 @@
 				<button class="btn btn-outline-dark" type="submit">Найти</button>
 			</form>
 			<ul class="navbar-nav">
-				<li class="nav-item">
-					<a class="nav-link ms-2" href="#"><img class="icon" src="~/icons/calendar.ico" alt="calendar"/></a>
+				<li class="nav-item" title="Фильтр">
+					<div class="dropdown">
+						<a class="btn btn-outline-dark dropdown-toggle ms-2" data-bs-toggle="dropdown" >
+							<img class="icon" src="~/icons/calendar.ico" alt="calendar"/>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a class="dropdown-item" asp-action="FilterByDay">День</a></li>
+							<li><a class="dropdown-item" asp-action="FilterByWeek">Неделя</a></li>
+							<li><a class="dropdown-item" asp-action="FilterByMonth">Месяц</a></li>
+							<li><a class="dropdown-item" asp-action="FilterByYear">Год</a></li>
+						</ul>
+					</div>
 				</li>
-				<li class="nav-item">
-					<a class="nav-link ms-2" href="#"><img class="icon" src="~/icons/filter.ico" alt="filter"/></a>
+				<li class="nav-item" title="Сортировка">
+					<div class="dropdown">
+						<a class="btn btn-outline-dark dropdown-toggle ms-2" data-bs-toggle="dropdown">
+							<img class="icon" src="~/icons/filter.ico" alt="filter"/>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a class="dropdown-item">Приоритет</a></li>
+							<li><a class="dropdown-item">Конечная дата</a></li>
+						</ul>
+					</div>
 				</li>
 			</ul>
 		</div>
