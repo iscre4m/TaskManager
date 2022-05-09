@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using TaskManager.Data;
@@ -220,7 +220,57 @@ namespace TaskManager.Controllers
 
             return View("App");
         }
-        
+
+        #endregion
+
+        #region Сортировки
+
+        public async Task<IActionResult> SortByPriority()
+        {
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+
+            if (user is null)
+            {
+                ViewBag.Message = "Вы не вошли в аккаунт";
+
+                return View("Error");
+            }
+
+            await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+            foreach (Models.Task task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
+
+            ViewBag.User = user;
+            ViewBag.Tasks = user.Tasks.OrderByDescending(t => t.Priority);
+
+            return View("App");
+        }
+
+        public async Task<IActionResult> SortByDate()
+        {
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+
+            if (user is null)
+            {
+                ViewBag.Message = "Вы не вошли в аккаунт";
+
+                return View("Error");
+            }
+
+            await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+            foreach (Models.Task task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
+
+            ViewBag.User = user;
+            ViewBag.Tasks = user.Tasks.OrderBy(t => t.EndDate);
+
+            return View("App");
+        }
+
         #endregion
     }
 }
