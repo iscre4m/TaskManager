@@ -17,12 +17,18 @@ namespace TaskManager.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> App()
+        private async Task<bool> IsUserSignedIn()
         {
             User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
 
-            if (user is not null)
+            return user is not null;
+        }
+
+        public async Task<IActionResult> App()
+        {
+            if (await IsUserSignedIn())
             {
+                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
                 await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
                 foreach (Models.Task task in user.Tasks)
                 {
@@ -31,7 +37,7 @@ namespace TaskManager.Controllers
 
                 ViewBag.User = user;
                 ViewBag.Tasks = user.Tasks;
-
+                
                 return View();
             }
 
@@ -42,14 +48,25 @@ namespace TaskManager.Controllers
 
         public async Task<IActionResult> Error()
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
 
-            if (user is not null)
+            if (await IsUserSignedIn())
             {
                 return View();
             }
 
             return Redirect("/Home/Index");
+        }
+
+        public async Task<IActionResult> Add()
+        {
+            if (await IsUserSignedIn())
+            {
+                return View("Add");
+            }
+
+            ViewBag.Message = "Вы не вошли в аккаунт";
+
+            return View("Error");
         }
 
         [HttpPost]
@@ -69,6 +86,18 @@ namespace TaskManager.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction("App", "Main");
+        }
+
+        public async Task<IActionResult> Edit()
+        {
+            if (await IsUserSignedIn())
+            {
+                return View("Edit");
+            }
+
+            ViewBag.Message = "Вы не вошли в аккаунт";
+
+            return View("Error");
         }
 
         [HttpPost]
@@ -97,128 +126,123 @@ namespace TaskManager.Controllers
             return RedirectToAction("App", "Main");
         }
 
-        public async Task<IActionResult> Find(string findDescription)
+        public async Task<IActionResult> Find(string description)
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-
-            if (user is null)
+            if (await IsUserSignedIn())
             {
-                ViewBag.Message = "Вы не вошли в аккаунт";
+                if (description is null)
+                {
+                    ViewBag.Message = "Введите описание задачи";
 
-                return View("Error");
+                    return View("Error");
+                }
+                
+                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+                foreach (Models.Task task in user.Tasks)
+                {
+                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
+                }
+
+                ViewBag.User = user;
+                ViewBag.Tasks = user.Tasks.Where(t => t.Description.Contains(description));
+
+                return View("App");
             }
 
-            if (findDescription is null)
-            {
-                ViewBag.Message = "Введите описание задачи";
+            ViewBag.Message = "Вы не вошли в аккаунт";
 
-                return View("Error");
-            }
-
-            await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-            foreach (Models.Task task in user.Tasks)
-            {
-                await _context.Entry(task).Collection("Subtasks").LoadAsync();
-            }
-
-            ViewBag.User = user;
-            ViewBag.Tasks = user.Tasks.Where(t => t.Description.Contains(findDescription));
-
-            return View("App");
+            return View("Error");
         }
 
         #region Фильтры
         
         public async Task<IActionResult> FilterByDay()
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-
-            if (user is null)
+            if (await IsUserSignedIn())
             {
-                ViewBag.Message = "Вы не вошли в аккаунт";
+                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+                foreach (Models.Task task in user.Tasks)
+                {
+                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
+                }
 
-                return View("Error");
+                ViewBag.User = user;
+                ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date == DateTime.Today);
+
+                return View("App");
             }
 
-            await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-            foreach (Models.Task task in user.Tasks)
-            {
-                await _context.Entry(task).Collection("Subtasks").LoadAsync();
-            }
+            ViewBag.Message = "Вы не вошли в аккаунт";
 
-            ViewBag.User = user;
-            ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date == DateTime.Today);
-
-            return View("App");
+            return View("Error");
         }
 
         public async Task<IActionResult> FilterByWeek()
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-
-            if (user is null)
+            if (await IsUserSignedIn())
             {
-                ViewBag.Message = "Вы не вошли в аккаунт";
+                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+                foreach (Models.Task task in user.Tasks)
+                {
+                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
+                }
 
-                return View("Error");
+                ViewBag.User = user;
+                ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddDays(7));
+
+                return View("App");
             }
 
-            await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-            foreach (Models.Task task in user.Tasks)
-            {
-                await _context.Entry(task).Collection("Subtasks").LoadAsync();
-            }
+            ViewBag.Message = "Вы не вошли в аккаунт";
 
-            ViewBag.User = user;
-            ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddDays(7));
-
-            return View("App");
+            return View("Error");
         }
 
         public async Task<IActionResult> FilterByMonth()
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-
-            if (user is null)
+            if (await IsUserSignedIn())
             {
-                ViewBag.Message = "Вы не вошли в аккаунт";
+                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+                foreach (Models.Task task in user.Tasks)
+                {
+                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
+                }
 
-                return View("Error");
+                ViewBag.User = user;
+                ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddMonths(1));
+
+                return View("App");
             }
 
-            await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-            foreach (Models.Task task in user.Tasks)
-            {
-                await _context.Entry(task).Collection("Subtasks").LoadAsync();
-            }
+            ViewBag.Message = "Вы не вошли в аккаунт";
 
-            ViewBag.User = user;
-            ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddMonths(1));
-
-            return View("App");
+            return View("Error");
         }
 
         public async Task<IActionResult> FilterByYear()
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-
-            if (user is null)
+            if (await IsUserSignedIn())
             {
-                ViewBag.Message = "Вы не вошли в аккаунт";
+                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+                foreach (Models.Task task in user.Tasks)
+                {
+                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
+                }
 
-                return View("Error");
+                ViewBag.User = user;
+                ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddYears(1));
+
+                return View("App");
             }
 
-            await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-            foreach (Models.Task task in user.Tasks)
-            {
-                await _context.Entry(task).Collection("Subtasks").LoadAsync();
-            }
+            ViewBag.Message = "Вы не вошли в аккаунт";
 
-            ViewBag.User = user;
-            ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddYears(1));
-
-            return View("App");
+            return View("Error");
         }
 
         #endregion
@@ -227,48 +251,46 @@ namespace TaskManager.Controllers
 
         public async Task<IActionResult> SortByPriority()
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-
-            if (user is null)
+            if (await IsUserSignedIn())
             {
-                ViewBag.Message = "Вы не вошли в аккаунт";
+                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+                foreach (Models.Task task in user.Tasks)
+                {
+                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
+                }
 
-                return View("Error");
+                ViewBag.User = user;
+                ViewBag.Tasks = user.Tasks.OrderByDescending(t => t.Priority);
+
+                return View("App");
             }
 
-            await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-            foreach (Models.Task task in user.Tasks)
-            {
-                await _context.Entry(task).Collection("Subtasks").LoadAsync();
-            }
+            ViewBag.Message = "Вы не вошли в аккаунт";
 
-            ViewBag.User = user;
-            ViewBag.Tasks = user.Tasks.OrderByDescending(t => t.Priority);
-
-            return View("App");
+            return View("Error");
         }
 
         public async Task<IActionResult> SortByDate()
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-
-            if (user is null)
+            if (await IsUserSignedIn())
             {
-                ViewBag.Message = "Вы не вошли в аккаунт";
+                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+                foreach (Models.Task task in user.Tasks)
+                {
+                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
+                }
 
-                return View("Error");
+                ViewBag.User = user;
+                ViewBag.Tasks = user.Tasks.OrderBy(t => t.EndDate);
+
+                return View("App");
             }
 
-            await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-            foreach (Models.Task task in user.Tasks)
-            {
-                await _context.Entry(task).Collection("Subtasks").LoadAsync();
-            }
+            ViewBag.Message = "Вы не вошли в аккаунт";
 
-            ViewBag.User = user;
-            ViewBag.Tasks = user.Tasks.OrderBy(t => t.EndDate);
-
-            return View("App");
+            return View("Error");
         }
 
         #endregion

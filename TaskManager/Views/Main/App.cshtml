@@ -4,14 +4,17 @@
 <nav class="navbar navbar-expand-lg">
 	<div class="container-fluid">
 		<div class="d-flex">
+			<a class="btn btn-outline-dark me-2" asp-action="App">
+				<img class="icon" src="~/icons/home.ico"/>
+			</a>
 			<form class="d-flex" asp-action="Find">
-				<input class="form-control me-2" type="search" name="findDescription">
+				<input class="form-control me-2" type="search" name="description">
 				<button class="btn btn-outline-dark" type="submit">Найти</button>
 			</form>
 			<ul class="navbar-nav">
 				<li class="nav-item" title="Фильтр">
 					<div class="dropdown">
-						<a class="btn btn-outline-dark dropdown-toggle ms-2" data-bs-toggle="dropdown" >
+						<a class="btn btn-outline-dark dropdown-toggle ms-2" data-bs-toggle="dropdown">
 							<img class="icon" src="~/icons/calendar.ico" alt="calendar"/>
 						</a>
 						<ul class="dropdown-menu">
@@ -37,7 +40,7 @@
 		</div>
 		<ul class="navbar-nav">
 			<li class="nav-item">
-				<a class="nav-link me-2" data-bs-toggle="modal" data-bs-target="#addModal"><img class="icon" src="~/icons/add.ico" alt="add"/></a>
+				<a class="nav-link me-2" asp-action="Add"><img class="icon" src="~/icons/add.ico" alt="add"/></a>
 			</li>
 			<li class="nav-item">
 				<a class="nav-link me-2" data-bs-toggle="modal" data-bs-target="#editModal"><img class="icon" src="~/icons/edit.ico" alt="edit"/></a>
@@ -88,66 +91,6 @@
 		}
 	</div>
 </div>
-<div id="addModal" class="modal fade" tabindex="-1">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<input type="button" class="btn btn-close" data-bs-dismiss="modal"/>
-			</div>
-			<div class="modal-body">
-				<form id="addForm" method="post" asp-action="Add">
-					<div class="mb-3">
-						<label for="addDescription" class="form-label">Описание</label>
-						<input id="addDescription" type="text" class="form-control" asp-for="Description">
-					</div>
-					<div class="mb-3">
-						<label for="addEndDate" class="form-label">Дата окончания</label>
-						<input id="addEndDate" type="date" class="form-control" asp-for="EndDate">
-					</div>
-					<div class="mb-3">
-						<label for="addPriority" class="form-label">Приоритет</label>
-						<select id="addPriority" class="form-control" asp-items="Html.GetEnumSelectList<Priority>()" asp-for="Priority"></select>
-					</div>
-					<div class="mb-3">
-						<label class="form-label">Подзадачи</label>
-						<ul id="addSubtasksList" class="list-group mb-1">
-						</ul>
-						<div class="d-flex">
-							<input id="addSubtask" type="text" class="form-control me-3">
-							<input id="addAddSubtask" type="button" class="btn btn-outline-dark" value="Добавить">
-						</div>
-					</div>
-					<div class="mb-3">
-						<label class="form-label">Хэштеги</label>
-						<ul id="addHashtagsList" class="list-group mb-1">
-						</ul>
-						<div class="d-flex">
-							<input id="addHashtag" type="text" class="form-control me-3">
-							<input id="addAddHashtag" type="button" class="btn btn-outline-dark" value="Добавить">
-						</div>
-					</div>
-					<div class="mb-3">
-						<label for="addComment" class="form-label">Комментарий</label>
-						<input id="addComment" type="text" class="form-control" asp-for="Comment">
-					</div>
-					<div class="mb-3">
-						<label class="form-label">Прикреплённые файлы</label>
-						<ul id="addAttachmentsList" class="list-group mb-1">
-						</ul>
-						<div class="d-flex">
-							<input id="addAttachment" type="text" class="form-control me-3">
-							<input id="addAddAttachment" type="button" class="btn btn-outline-dark" value="Добавить">
-						</div>
-					</div>
-					<button type="submit" class="btn btn-outline-dark">Добавить</button>
-					<div>
-						<span class="text-danger" asp-validation-for="Description"></span>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
 <div id="editModal" class="modal fade" tabindex="-1">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -157,60 +100,14 @@
 			<div class="modal-body">
 				<form id="editForm" method="post" asp-action="Edit">
 					<div class="mb-3">
-						<select class="form-select" asp-for="Id">
+						<select id="editSelect" class="form-select" asp-for="Id">
 							@foreach (Task task in ViewBag.User.Tasks)
 							{
 								<option value="@task.Id">@task.Description</option>
 							}
 						</select>
 					</div>
-					<div class="mb-3">
-						<label for="editDescription" class="form-label">Описание</label>
-						<input id="editDescription" type="text" class="form-control" asp-for="Description">
-					</div>
-					<div class="mb-3">
-						<label for="editEndDate" class="form-label">Дата окончания</label>
-						<input id="editEndDate" type="date" class="form-control" asp-for="EndDate">
-					</div>
-					<div class="mb-3">
-						<label for="editPriority" class="form-label">Приоритет</label>
-						<select id="editPriority" class="form-control" asp-items="Html.GetEnumSelectList<Priority>()" asp-for="Priority"></select>
-					</div>
-					<div class="mb-3">
-						<label class="form-label">Подзадачи</label>
-						<ul id="editSubtasksList" class="list-group mb-1">
-						</ul>
-						<div class="d-flex">
-							<input id="editSubtask" type="text" class="form-control me-3">
-							<input id="editAddSubtask" type="button" class="btn btn-outline-dark" value="Добавить">
-						</div>
-					</div>
-					<div class="mb-3">
-						<label class="form-label">Хэштеги</label>
-						<ul id="editHashtagsList" class="list-group mb-1">
-						</ul>
-						<div class="d-flex">
-							<input id="editHashtag" type="text" class="form-control me-3">
-							<input id="editAddHashtag" type="button" class="btn btn-outline-dark" value="Добавить">
-						</div>
-					</div>
-					<div class="mb-3">
-						<label for="editComment" class="form-label">Комментарий</label>
-						<input id="editComment" type="text" class="form-control" asp-for="Comment">
-					</div>
-					<div class="mb-3">
-						<label class="form-label">Прикреплённые файлы</label>
-						<ul id="editAttachmentsList" class="list-group mb-1">
-						</ul>
-						<div class="d-flex">
-							<input id="editAttachment" type="text" class="form-control me-3">
-							<input id="editAddAttachment" type="button" class="btn btn-outline-dark" value="Добавить">
-						</div>
-					</div>
 					<button type="submit" class="btn btn-outline-dark">Редактировать</button>
-					<div>
-						<span class="text-danger" asp-validation-for="Description"></span>
-					</div>
 				</form>
 			</div>
 		</div>
@@ -224,12 +121,14 @@
 			</div>
 			<div class="modal-body">
 				<form id="removeForm" method="post" asp-action="Remove">
-					<select class="form-select mb-3" asp-for="Id">
-						@foreach(Task task in ViewBag.User.Tasks)
-						{
-							<option value="@task.Id">@task.Description</option>
-						}
-					</select>
+					<div class="mb-3">
+						<select class="form-select mb-3" asp-for="Id">
+							@foreach (Task task in ViewBag.User.Tasks)
+							{
+								<option value="@task.Id">@task.Description</option>
+							}
+						</select>
+					</div>
 					<button type="submit" class="btn btn-outline-dark">Удалить</button>
 				</form>
 			</div>
