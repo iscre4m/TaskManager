@@ -1,5 +1,6 @@
-﻿<h1>Edit</h1>
-
+﻿@model TaskManager.Models.Task
+<partial name="_Menu"/>
+<h1>@Model.Description</h1>
 @section navItems {
 	<li class="nav-item">
 		<a class="nav-link" asp-controller="Authentication" asp-action="SignOut">Выход</a>

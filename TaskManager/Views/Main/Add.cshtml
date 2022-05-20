@@ -1,5 +1,24 @@
-﻿<h1>Add</h1>
-
+﻿@model TaskManager.Models.Task
+<partial name="_Menu"/>
+<div class="container-fluid">
+	<form>
+		<div class="d-flex">
+			<div class="container-fluid">
+				<div class="mb-3">
+					<label for="description" class="form-label">Описание</label>
+					<input type="text" id="description" class="form-control" asp-for="Description"/>
+				</div>
+			</div>
+			<div class="container-fluid">
+				<div class="mb-3">
+					<label for="comment" class="form-label">Комментарий</label>
+					<input type="text" id="comment" class="form-control" asp-for="Comment"/>
+				</div>
+			</div>
+		</div>
+		<button type="submit" class="btn btn-outline-dark">Добавить</button>
+	</form>
+</div>
 @section navItems {
 	<li class="nav-item">
 		<a class="nav-link" asp-controller="Authentication" asp-action="SignOut">Выход</a>

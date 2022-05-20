@@ -24,6 +24,13 @@ namespace TaskManager.Controllers
             return user is not null;
         }
 
+        private async Task<bool> IsTaskExists(string description)
+        {
+            Models.Task task = await _context.Tasks.FirstOrDefaultAsync(t => t.Description == description);
+
+            return task is not null;
+        }
+
         public async Task<IActionResult> App()
         {
             if (await IsUserSignedIn())
@@ -61,7 +68,7 @@ namespace TaskManager.Controllers
         {
             if (await IsUserSignedIn())
             {
-                return View("Add");
+                return View();
             }
 
             ViewBag.Message = "Вы не вошли в аккаунт";
@@ -72,9 +79,7 @@ namespace TaskManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(Models.Task task)
         {
-            Models.Task queryTask = await _context.Tasks.FirstOrDefaultAsync(t => t.Description == task.Description);
-
-            if (queryTask is not null)
+            if (await IsTaskExists(task.Description))
             {
                 ViewBag.Message = "Задача с таким описанием уже существует";
 
@@ -88,11 +93,15 @@ namespace TaskManager.Controllers
             return RedirectToAction("App", "Main");
         }
 
-        public async Task<IActionResult> Edit()
+        [HttpPost]
+        public async Task<IActionResult> EditPage(int id)
         {
             if (await IsUserSignedIn())
             {
-                return View("Edit");
+                Models.Task task = await _context.Tasks.FirstAsync(t => t.Id == id);
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+
+                return View("Edit", task);
             }
 
             ViewBag.Message = "Вы не вошли в аккаунт";
@@ -103,6 +112,13 @@ namespace TaskManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(Models.Task task)
         {
+            if (await IsTaskExists(task.Description))
+            {
+                ViewBag.Message = "Задача с таким описанием уже существует";
+
+                return View("Error");
+            }
+
             _context.Tasks.Update(task);
             await _context.SaveChangesAsync();
 
@@ -110,9 +126,9 @@ namespace TaskManager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Remove(Models.Task task)
+        public async Task<IActionResult> Remove(int id)
         {
-            Models.Task queryTask = await _context.Tasks.FindAsync(task.Id);
+            Models.Task queryTask = await _context.Tasks.FindAsync(id);
             await _context.Entry(queryTask).Collection("Subtasks").LoadAsync();
 
             foreach (Subtask subtask in queryTask.Subtasks)
