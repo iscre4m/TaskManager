@@ -97,7 +97,7 @@ namespace TaskManager.Controllers
             return RedirectToAction("App", "Main");
         }
 
-        public async Task<IActionResult> Find(string description)
+        public async Task<IActionResult> Find(string findDescription)
         {
             User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
 
@@ -108,7 +108,7 @@ namespace TaskManager.Controllers
                 return View("Error");
             }
 
-            if (description is null)
+            if (findDescription is null)
             {
                 ViewBag.Message = "Введите описание задачи";
 
@@ -122,7 +122,7 @@ namespace TaskManager.Controllers
             }
 
             ViewBag.User = user;
-            ViewBag.Tasks = user.Tasks.Where(t => t.Description.Contains(description));
+            ViewBag.Tasks = user.Tasks.Where(t => t.Description.Contains(findDescription));
 
             return View("App");
         }
