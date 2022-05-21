@@ -1,8 +1,9 @@
-﻿<h1 class="display-4 text-center mt-5">@ViewBag.Message</h1>
-
-@section navItems {
-	<partial name="_SignInSignOut"/>
-}
+﻿<div class="d-flex flex-column align-items-center">
+	<h1 class="display-4 mt-2">@ViewBag.Message</h1>
+	<a class="btn btn-outline-dark mt-2" asp-controller="Main" asp-action="App">
+		<img class="icon" src="~/icons/home.ico"/>
+	</a>
+</div>
 
 @section scripts {
 	<script src="~/lib/jquery/jquery/dist/jquery.min.js"></script>

@@ -21,9 +21,9 @@ namespace TaskManager.Controllers
         {
             if (await _context.Users.AnyAsync(u => u.Login == user.Login))
             {
-                ViewBag.Message = "Пользователь уже существует";
+                await System.IO.File.WriteAllTextAsync("Data/error.txt", "Пользователь уже существует");
 
-                return View("Error");
+                return RedirectToAction("Error", "Home");
             }
 
             user.IsSignedIn = true;
@@ -48,14 +48,14 @@ namespace TaskManager.Controllers
                     return RedirectToAction("App", "Main");
                 }
 
-                ViewBag.Message = "Неверный пароль";
+                await System.IO.File.WriteAllTextAsync("Data/error.txt", "Неверный пароль");
 
-                return View("Error");
+                return RedirectToAction("Error", "Home");
             }
-            
-            ViewBag.Message = "Пользователь не найден";
 
-            return View("Error");
+            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Пользователь не найден");
+
+            return RedirectToAction("Error", "Home");
         }
 
         public new async Task<IActionResult> SignOut()

@@ -17,6 +17,8 @@ namespace TaskManager.Controllers
             _context = context;
         }
 
+        #region Проверки
+        
         private async Task<bool> IsUserSignedIn()
         {
             User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
@@ -31,6 +33,8 @@ namespace TaskManager.Controllers
             return task is not null;
         }
 
+        #endregion
+
         public async Task<IActionResult> App()
         {
             if (await IsUserSignedIn())
@@ -41,27 +45,13 @@ namespace TaskManager.Controllers
                 {
                     await _context.Entry(task).Collection("Subtasks").LoadAsync();
                 }
-
-                ViewBag.User = user;
-                ViewBag.Tasks = user.Tasks;
                 
-                return View();
+                return View(user);
             }
 
-            ViewBag.Message = "Вы не вошли в аккаунт";
+            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return View("Error");
-        }
-
-        public async Task<IActionResult> Error()
-        {
-
-            if (await IsUserSignedIn())
-            {
-                return View();
-            }
-
-            return Redirect("/Home/Index");
+            return RedirectToAction("Error", "Home");
         }
 
         public async Task<IActionResult> Add()
@@ -71,9 +61,9 @@ namespace TaskManager.Controllers
                 return View();
             }
 
-            ViewBag.Message = "Вы не вошли в аккаунт";
+            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return View("Error");
+            return RedirectToAction("Error", "Home");
         }
 
         [HttpPost]
@@ -81,9 +71,9 @@ namespace TaskManager.Controllers
         {
             if (await IsTaskExists(task.Description))
             {
-                ViewBag.Message = "Задача с таким описанием уже существует";
+                await System.IO.File.WriteAllTextAsync("Data/error.txt", "Задача с таким описанием уже существует");
 
-                return View("Error");
+                return RedirectToAction("Error", "Home");
             }
 
             await _context.Tasks.AddAsync(task);
@@ -94,29 +84,13 @@ namespace TaskManager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditPage(int id)
-        {
-            if (await IsUserSignedIn())
-            {
-                Models.Task task = await _context.Tasks.FirstAsync(t => t.Id == id);
-                await _context.Entry(task).Collection("Subtasks").LoadAsync();
-
-                return View("Edit", task);
-            }
-
-            ViewBag.Message = "Вы не вошли в аккаунт";
-
-            return View("Error");
-        }
-
-        [HttpPost]
         public async Task<IActionResult> Edit(Models.Task task)
         {
             if (await IsTaskExists(task.Description))
             {
-                ViewBag.Message = "Задача с таким описанием уже существует";
+                await System.IO.File.WriteAllTextAsync("Data/error.txt", "Задача с таким описанием уже существует");
 
-                return View("Error");
+                return RedirectToAction("Error", "Home");
             }
 
             _context.Tasks.Update(task);
@@ -148,9 +122,9 @@ namespace TaskManager.Controllers
             {
                 if (description is null)
                 {
-                    ViewBag.Message = "Введите описание задачи";
+                    await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не ввели описание задачи");
 
-                    return View("Error");
+                    return RedirectToAction("Error", "Home");
                 }
                 
                 User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
@@ -166,9 +140,9 @@ namespace TaskManager.Controllers
                 return View("App");
             }
 
-            ViewBag.Message = "Вы не вошли в аккаунт";
+            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return View("Error");
+            return RedirectToAction("Error", "Home");
         }
 
         #region Фильтры
@@ -190,9 +164,9 @@ namespace TaskManager.Controllers
                 return View("App");
             }
 
-            ViewBag.Message = "Вы не вошли в аккаунт";
+            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return View("Error");
+            return RedirectToAction("Error", "Home");
         }
 
         public async Task<IActionResult> FilterByWeek()
@@ -212,9 +186,9 @@ namespace TaskManager.Controllers
                 return View("App");
             }
 
-            ViewBag.Message = "Вы не вошли в аккаунт";
+            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return View("Error");
+            return RedirectToAction("Error", "Home");
         }
 
         public async Task<IActionResult> FilterByMonth()
@@ -234,9 +208,9 @@ namespace TaskManager.Controllers
                 return View("App");
             }
 
-            ViewBag.Message = "Вы не вошли в аккаунт";
+            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return View("Error");
+            return RedirectToAction("Error", "Home");
         }
 
         public async Task<IActionResult> FilterByYear()
@@ -256,9 +230,9 @@ namespace TaskManager.Controllers
                 return View("App");
             }
 
-            ViewBag.Message = "Вы не вошли в аккаунт";
+            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return View("Error");
+            return RedirectToAction("Error", "Home");
         }
 
         #endregion
@@ -282,9 +256,9 @@ namespace TaskManager.Controllers
                 return View("App");
             }
 
-            ViewBag.Message = "Вы не вошли в аккаунт";
+            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return View("Error");
+            return RedirectToAction("Error", "Home");
         }
 
         public async Task<IActionResult> SortByDate()
@@ -304,9 +278,9 @@ namespace TaskManager.Controllers
                 return View("App");
             }
 
-            ViewBag.Message = "Вы не вошли в аккаунт";
+            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return View("Error");
+            return RedirectToAction("Error", "Home");
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿@model TaskManager.Models.Task
+
 <partial name="_Menu"/>
 <div class="container-fluid">
 	<form>
@@ -19,8 +20,3 @@
 		<button type="submit" class="btn btn-outline-dark">Добавить</button>
 	</form>
 </div>
-@section navItems {
-	<li class="nav-item">
-		<a class="nav-link" asp-controller="Authentication" asp-action="SignOut">Выход</a>
-	</li>
-}

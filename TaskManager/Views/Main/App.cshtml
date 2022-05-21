@@ -1,11 +1,11 @@
 ﻿@using Task = TaskManager.Models.Task
-@model Task
+@model User
 
 <partial name="_Menu"/>
 <div class="container-fluid d-flex">
 	<div id="allTasks" class="container border border-dark">
 		<div class="d-flex flex-column">
-			@foreach (Task task in ViewBag.Tasks)
+			@foreach (Task task in Model.Tasks)
 			{
 				<div class=" d-flex flex-column mb-3">
 					<div>
@@ -33,12 +33,9 @@
 		</div>
 	</div>
 	<div id="completedTodayTasks" class="container border-top border border-dark">
-		@foreach (Task task in ViewBag.User.Tasks)
+		@foreach (Task task in Model.Tasks.Where(task => task.FinishDate.Date == DateTime.Today))
 		{
-			if (task.IsFinished && task.FinishDate.Date == DateTime.Today)
-			{
-				<span>@task.Description</span>
-			}
+			<span>@task.Description</span>
 		}
 	</div>
 </div>
@@ -49,10 +46,10 @@
 				<input type="button" class="btn btn-close" data-bs-dismiss="modal"/>
 			</div>
 			<div class="modal-body">
-				<form id="editForm" asp-action="EditPage">
+				<form id="editForm">
 					<div class="mb-3">
 						<select class="form-select" name="id">
-							@foreach (Task task in ViewBag.User.Tasks)
+							@foreach (Task task in Model.Tasks)
 							{
 								<option value="@task.Id">@task.Description</option>
 							}
@@ -74,7 +71,7 @@
 				<form id="removeForm" method="post" asp-action="Remove">
 					<div class="mb-3">
 						<select class="form-select mb-3" name="id">
-							@foreach (Task task in ViewBag.User.Tasks)
+							@foreach (Task task in Model.Tasks)
 							{
 								<option value="@task.Id">@task.Description</option>
 							}
@@ -86,12 +83,6 @@
 		</div>
 	</div>
 </div>
-
-@section navItems {
-	<li class="nav-item">
-		<a class="nav-link" asp-controller="Authentication" asp-action="SignOut">Выход</a>
-	</li>
-}
 
 @section scripts {
 	<script src="~/lib/jquery/jquery/dist/jquery.min.js"></script>

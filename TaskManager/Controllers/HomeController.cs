@@ -26,5 +26,12 @@ namespace TaskManager.Controllers
 
             return View();
         }
+
+        public async Task<IActionResult> Error()
+        {
+            ViewBag.Message = await System.IO.File.ReadAllTextAsync("Data/error.txt");
+
+            return View();
+        }
     }
 }

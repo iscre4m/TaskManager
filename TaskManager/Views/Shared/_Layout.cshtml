@@ -14,7 +14,12 @@
 		<div class="container-fluid">
 			<a class="navbar-brand" asp-controller="Home" asp-action="Index">Планировщик задач</a>
 			<ul class="navbar-nav">
-				@await RenderSectionAsync("navItems", true)
+				<li class="nav-item">
+					<a class="nav-link" data-bs-toggle="modal" data-bs-target="#signUpModal">Регистрация</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" data-bs-toggle="modal" data-bs-target="#signInModal">Вход</a>
+				</li>
 			</ul>
 		</div>
 	</nav>
