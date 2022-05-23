@@ -45,8 +45,10 @@ namespace TaskManager.Controllers
                 {
                     await _context.Entry(task).Collection("Subtasks").LoadAsync();
                 }
+
+                ViewBag.Tasks = user.Tasks;
                 
-                return View(user);
+                return View();
             }
 
             await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
@@ -134,7 +136,6 @@ namespace TaskManager.Controllers
                     await _context.Entry(task).Collection("Subtasks").LoadAsync();
                 }
 
-                ViewBag.User = user;
                 ViewBag.Tasks = user.Tasks.Where(t => t.Description.Contains(description));
 
                 return View("App");
@@ -158,7 +159,6 @@ namespace TaskManager.Controllers
                     await _context.Entry(task).Collection("Subtasks").LoadAsync();
                 }
 
-                ViewBag.User = user;
                 ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date == DateTime.Today);
 
                 return View("App");
@@ -180,7 +180,6 @@ namespace TaskManager.Controllers
                     await _context.Entry(task).Collection("Subtasks").LoadAsync();
                 }
 
-                ViewBag.User = user;
                 ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddDays(7));
 
                 return View("App");
@@ -202,7 +201,6 @@ namespace TaskManager.Controllers
                     await _context.Entry(task).Collection("Subtasks").LoadAsync();
                 }
 
-                ViewBag.User = user;
                 ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddMonths(1));
 
                 return View("App");
@@ -224,7 +222,6 @@ namespace TaskManager.Controllers
                     await _context.Entry(task).Collection("Subtasks").LoadAsync();
                 }
 
-                ViewBag.User = user;
                 ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddYears(1));
 
                 return View("App");
@@ -250,7 +247,6 @@ namespace TaskManager.Controllers
                     await _context.Entry(task).Collection("Subtasks").LoadAsync();
                 }
 
-                ViewBag.User = user;
                 ViewBag.Tasks = user.Tasks.OrderByDescending(t => t.Priority);
 
                 return View("App");
@@ -272,7 +268,6 @@ namespace TaskManager.Controllers
                     await _context.Entry(task).Collection("Subtasks").LoadAsync();
                 }
 
-                ViewBag.User = user;
                 ViewBag.Tasks = user.Tasks.OrderBy(t => t.EndDate);
 
                 return View("App");

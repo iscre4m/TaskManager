@@ -1,11 +1,10 @@
 ﻿@using Task = TaskManager.Models.Task
-@model User
 
 <partial name="_Menu"/>
 <div class="container-fluid d-flex">
 	<div id="allTasks" class="container border border-dark">
 		<div class="d-flex flex-column">
-			@foreach (Task task in Model.Tasks)
+			@foreach (Task task in ViewBag.Tasks)
 			{
 				<div class=" d-flex flex-column mb-3">
 					<div>
@@ -33,7 +32,7 @@
 		</div>
 	</div>
 	<div id="completedTodayTasks" class="container border-top border border-dark">
-		@foreach (Task task in Model.Tasks.Where(task => task.FinishDate.Date == DateTime.Today))
+		@foreach (Task task in ((IEnumerable<Task>)ViewBag.Tasks).Where(task => task.FinishDate.Date == DateTime.Today))
 		{
 			<span>@task.Description</span>
 		}
@@ -49,7 +48,7 @@
 				<form id="editForm">
 					<div class="mb-3">
 						<select class="form-select" name="id">
-							@foreach (Task task in Model.Tasks)
+							@foreach (Task task in ViewBag.Tasks)
 							{
 								<option value="@task.Id">@task.Description</option>
 							}
@@ -71,7 +70,7 @@
 				<form id="removeForm" method="post" asp-action="Remove">
 					<div class="mb-3">
 						<select class="form-select mb-3" name="id">
-							@foreach (Task task in Model.Tasks)
+							@foreach (Task task in ViewBag.Tasks)
 							{
 								<option value="@task.Id">@task.Description</option>
 							}
