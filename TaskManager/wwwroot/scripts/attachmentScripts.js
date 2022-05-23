@@ -1,53 +1,21 @@
-﻿$(function() {
-    $("#addAddAttachment").click(function () {
-        if ($("#addAttachment").val() === "") {
-            return;
-        }
+﻿$(function () {
+    $("#attachments").change(function () {
+        $("#attachmentsList").children().remove();
+        let index = 0;
+        for (let file of $("#attachments").get(0).files) {
+            const closeButtonId = `removeAttachment${$("#attachmentsList").children().length}`;
 
-        for (let item of $("#addAttachmentsList").children()) {
-            if (item.innerText === $("#addAttachment").val()) {
-                return;
-            }
-        }
-
-        const closeButtonId = `addRemoveAttachment${$("#addAttachmentsList").children().length}`;
-
-        $("#addAttachmentsList").append(`<li class="list-group-item">
+            $("#attachmentsList").append(`<li class="list-group-item">
                                         <div class="d-flex justify-content-between">
-                                            ${$("#addAttachment").val()}
+                                            <input type="hidden" name="Attachments[${index}].path" value="${file.name}">
+                                            ${file.name}
                                             <input id="${closeButtonId}" type="button" class="btn-close">
                                         </div>
                                     </li>`);
-        $(`#${closeButtonId}`).click(function () {
-            $(this).parent().parent().remove();
-        });
 
-        $("#addAttachment").val("");
-    });
-
-    $("#editAddAttachment").click(function () {
-        if ($("#editAttachment").val() === "") {
-            return;
+            $(`#${closeButtonId}`).click(function () {
+                $(this).parent().parent().remove();
+            });
         }
-
-        for (let item of $("#editAttachmentsList").children()) {
-            if (item.innerText === $("#editAttachment").val()) {
-                return;
-            }
-        }
-
-        const closeButtonId = `editRemoveAttachment${$("#editAttachmentsList").children().length}`;
-
-        $("#editAttachmentsList").append(`<li class="list-group-item">
-                                        <div class="d-flex justify-content-between">
-                                            ${$("#editAttachment").val()}
-                                            <input id="${closeButtonId}" type="button" class="btn-close">
-                                        </div>
-                                    </li>`);
-        $(`#${closeButtonId}`).click(function () {
-            $(this).parent().parent().remove();
-        });
-
-        $("#editAttachment").val("");
     });
 });

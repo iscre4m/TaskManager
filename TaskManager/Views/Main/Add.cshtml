@@ -1,22 +1,68 @@
 ﻿@model TaskManager.Models.Task
 
 <partial name="_Menu"/>
-<div class="container-fluid">
+<div>
 	<form>
-		<div class="d-flex">
-			<div class="container-fluid">
-				<div class="mb-3">
+		<div class="d-flex justify-content-center">
+			<div class="d-flex flex-column w-25 me-2">
+				<div>
 					<label for="description" class="form-label">Описание</label>
 					<input type="text" id="description" class="form-control" asp-for="Description"/>
 				</div>
-			</div>
-			<div class="container-fluid">
-				<div class="mb-3">
+				<div class="mb-2">
+					<span class="text-danger" asp-validation-for="Description"></span>
+				</div>
+				<div class="mb-2">
+					<label for="endDate" class="form-label">Конечная дата</label>
+					<input id="endDate" type="date" class="form-control" asp-for="EndDate"/>
+				</div>
+				<div class="mb-2">
+					<label for="priority" class="form-label">Приоритет</label>
+					<select id="priority" class="form-control" asp-for="Priority" asp-items="Html.GetEnumSelectList<Priority>()"></select>
+				</div>
+				<div class="mb-2">
 					<label for="comment" class="form-label">Комментарий</label>
 					<input type="text" id="comment" class="form-control" asp-for="Comment"/>
 				</div>
+				<div class="mb-2">
+					<button type="submit" class="btn btn-outline-dark">Добавить</button>
+				</div>
+			</div>
+			<div class="d-flex flex-column w-25">
+				
+				<div class="mb-2">
+					<label for="subtask" class="form-label">Подзадачи</label>
+					<div class="d-flex">
+						<input id="subtask" type="text" class="form-control me-2"/>
+						<button id="addSubtaskButton" type="button" class="btn btn-outline-dark">Добавить</button>
+					</div>
+					<ul id="subtasksList" class="list-group"></ul>
+				</div>
+				<div class="mb-2">
+					<label for="hashtag" class="form-label">Хештеги</label>
+					<div class="d-flex">
+						<input id="hashtag" type="text" class="form-control me-2"/>
+						<button id="addHashtagButton" type="button" class="btn btn-outline-dark">Добавить</button>
+					</div>
+					<ul id="hashtagsList" class="list-group"></ul>
+				</div>
+				<div class="mb-2">
+					<label for="attachments" class="form-label">Прикреплённые файлы</label>
+					<input id="attachments" type="file" class="form-control" multiple>
+					<ul id="attachmentsList" class="list-group mt-2"></ul>
+				</div>
 			</div>
 		</div>
-		<button type="submit" class="btn btn-outline-dark">Добавить</button>
 	</form>
 </div>
+
+@section scripts {
+	<script src="~/lib/jquery/jquery/dist/jquery.min.js"></script>
+	<script src="~/scripts/dateScripts.js"></script>
+	<script src="~/scripts/subtaskScripts.js"></script>
+	<script src="~/scripts/hashtagScripts.js"></script>
+	<script src="~/scripts/attachmentScripts.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/lib/jquery/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script src="~/lib/jquery/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+}

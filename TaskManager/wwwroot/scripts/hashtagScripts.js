@@ -1,61 +1,39 @@
 ﻿$(function() {
-    $("#addAddHashtag").click(function () {
-        if ($("#addHashtag").val() === "") {
+    $("#addHashtagButton").click(function () {
+        if ($("#hashtag").val() === "") {
             return;
         }
 
-        for (let item of $("#addHashtagsList").children()) {
-            if (item.innerText === `#${$("#addHashtag").val()}`) {
+        for (let item of $("#hashtagsList").children()) {
+            if (item.innerText === `#${$("#hashtag").val()}`) {
                 return;
             }
         }
 
-        if (!/#/.test($("#addHashtag").val())) {
-            $("#addHashtag").val(`#${$("#addHashtag").val()}`);
+        if (!/#/.test($("#hashtag").val())) {
+            $("#hashtag").val(`#${$("#hashtag").val()}`);
         }
 
-        const closeButtonId = `addRemoveHashtag${$("#addHashtagsList").children().length}`;
+        const hashtagsCount = $("#hashtagsList").children().length;
+        const closeButtonId = `removeHashtag${$("#hashtagsList").children().length}`;
 
-        $("#addHashtagsList").append(`<li class="list-group-item">
+        $("#hashtagsList").addClass("mt-2");
+        $("#hashtagsList").append(`<li class="list-group-item">
                                         <div class="d-flex justify-content-between">
-                                            ${$("#addHashtag").val()}
+                                            <input type="hidden" name="Hashtags[${hashtagsCount}].value" value="${$("#hashtag").val()}">
+                                            ${$("#hashtag").val()}
                                             <input id="${closeButtonId}" type="button" class="btn-close">
                                         </div>
                                     </li>`);
+
         $(`#${closeButtonId}`).click(function () {
             $(this).parent().parent().remove();
-        });
 
-        $("#addHashtag").val("");
-    });
-
-    $("#editAddHashtag").click(function () {
-        if ($("#editHashtag").val() === "") {
-            return;
-        }
-
-        for (let item of $("#editHashtagsList").children()) {
-            if (item.innerText === `#${$("#editHashtag").val()}`) {
-                return;
+            if ($("#hashtagsList").children().length === 0) {
+                $("#subtasksList").removeClass("mt-2");
             }
-        }
-
-        if (!/#/.test($("#editHashtag").val())) {
-            $("#editHashtag").val(`#${$("#editHashtag").val()}`);
-        }
-
-        const closeButtonId = `editRemoveHashtag${$("#editHashtagsList").children().length}`;
-
-        $("#editHashtagsList").append(`<li class="list-group-item">
-                                        <div class="d-flex justify-content-between">
-                                            ${$("#editHashtag").val()}
-                                            <input id="${closeButtonId}" type="button" class="btn-close">
-                                        </div>
-                                    </li>`);
-        $(`#${closeButtonId}`).click(function () {
-            $(this).parent().parent().remove();
         });
 
-        $("#editHashtag").val("");
+        $("#hashtag").val("");
     });
 });

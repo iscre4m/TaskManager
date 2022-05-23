@@ -1,8 +1,14 @@
-﻿.icon {
+﻿@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,500&display=swap');
+
+.icon {
     width: 1.5em;
     height: 1.5em;
 }
 
 .nav-link {
     cursor: pointer;
+}
+
+.navbar-brand {
+    font-family : "Kanit", sans-serif;
 }
