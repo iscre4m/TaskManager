@@ -32,13 +32,6 @@ namespace TaskManager.Controllers
             return View(user);
         }
 
-        private async Task<bool> IsTaskExists(string description)
-        {
-            Models.Task task = await _context.Tasks.FirstOrDefaultAsync(t => t.Description == description);
-
-            return task is not null;
-        }
-
         public IActionResult Add()
         {
             return View();
@@ -47,7 +40,8 @@ namespace TaskManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(Models.Task task)
         {
-            if(!await IsTaskExists(task.Description))
+            if(await _context.Tasks.FirstOrDefaultAsync(
+                t => t.Description == task.Description) is not null)
             {
                 await _context.Tasks.AddAsync(task);
                 (await _context.Users.FirstAsync(u => u.Username == User.Identity.Name)).Tasks.Add(task);
@@ -61,38 +55,61 @@ namespace TaskManager.Controllers
             return View(task);
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Edit(Models.Task task)
-        //{
-        //    if (await IsTaskExists(task.Description))
-        //    {
-        //        await System.IO.File.WriteAllTextAsync("Data/error.txt", "Задача с таким описанием уже существует");
+        public async Task<IActionResult> Edit(int id)
+        {
+            Models.Task task = await _context.Tasks.FindAsync(id);
 
-        //        return RedirectToAction("Error", "Home");
-        //    }
+            await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            await _context.Entry(task).Collection("Hashtags").LoadAsync();
+            await _context.Entry(task).Collection("Attachments").LoadAsync();
 
-        //    _context.Tasks.Update(task);
-        //    await _context.SaveChangesAsync();
+            return View(task);
+        }
 
-        //    return RedirectToAction("App", "Main");
-        //}
+        [HttpPost]
+        public async Task<IActionResult> Edit(Models.Task task)
+        {
+            if(_context.Tasks.Where(t => t.Description == task.Description).Count() < 2)
+            {
+                _context.Tasks.Update(task);
+                await _context.SaveChangesAsync();
 
-        //[HttpPost]
-        //public async Task<IActionResult> Remove(int id)
-        //{
-        //    Models.Task queryTask = await _context.Tasks.FindAsync(id);
-        //    await _context.Entry(queryTask).Collection("Subtasks").LoadAsync();
+                return RedirectToAction("App", "Main");
+            }
 
-        //    foreach (Subtask subtask in queryTask.Subtasks)
-        //    {
-        //        _context.Subtasks.Remove(subtask);
-        //    }
+            ModelState.AddModelError("", "Задача с таким описанием уже существует");
 
-        //    _context.Tasks.Remove(queryTask);
-        //    await _context.SaveChangesAsync();
+            return View(task);
+        }
 
-        //    return RedirectToAction("App", "Main");
-        //}
+        [HttpPost]
+        public async Task<IActionResult> Remove(int id)
+        {
+            Models.Task queryTask = await _context.Tasks.FindAsync(id);
+
+            await _context.Entry(queryTask).Collection("Subtasks").LoadAsync();
+            foreach (Subtask subtask in queryTask.Subtasks)
+            {
+                _context.Subtasks.Remove(subtask);
+            }
+
+            await _context.Entry(queryTask).Collection("Hashtags").LoadAsync();
+            foreach (Hashtag hashtag in queryTask.Hashtags)
+            {
+                _context.Hashtags.Remove(hashtag);
+            }
+            
+            await _context.Entry(queryTask).Collection("Attachments").LoadAsync();
+            foreach (Attachment attachment in queryTask.Attachments)
+            {
+                _context.Attachments.Remove(attachment);
+            }
+
+            _context.Tasks.Remove(queryTask);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("App", "Main");
+        }
 
         //public async Task<IActionResult> Find(string description)
         //{

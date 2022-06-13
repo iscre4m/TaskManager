@@ -66,17 +66,17 @@
 		}
 	</ul>
 </div>
-@*<div id="editModal" class="modal fade" tabindex="-1">
+<div id="editModal" class="modal fade" tabindex="-1">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
 				<input type="button" class="btn btn-close" data-bs-dismiss="modal"/>
 			</div>
 			<div class="modal-body">
-				<form id="editForm">
+				<form id="editForm" asp-action="Edit" method="GET">
 					<div class="mb-3">
 						<select class="form-select" name="id">
-							@foreach (Task task in ViewBag.Tasks)
+							@foreach (var task in Model.Tasks)
 							{
 								<option value="@task.Id">@task.Description</option>
 							}
@@ -98,7 +98,7 @@
 				<form id="removeForm" method="post" asp-action="Remove">
 					<div class="mb-3">
 						<select class="form-select mb-3" name="id">
-							@foreach (Task task in ViewBag.Tasks)
+							@foreach (var task in Model.Tasks)
 							{
 								<option value="@task.Id">@task.Description</option>
 							}
@@ -109,7 +109,7 @@
 			</div>
 		</div>
 	</div>
-</div>*@
+</div>
 @*<div class="container-fluid d-flex">
 	<div id="allTasks" class="container border border-dark">
 		<div class="d-flex flex-column">
