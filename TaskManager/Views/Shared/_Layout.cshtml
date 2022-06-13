@@ -7,11 +7,11 @@
 	<link rel="stylesheet" asp-href-include="~/styles.css" asp-append-version="true"/>
 </head>
 <body>
-	<div class="d-flex flex-column">
-		<header>
+	<div class="d-flex flex-column align-items-center">
+		<header class="w-100">
 			<nav class="navbar navbar-expand-lg bg-light navbar-light">
 				<div class="container-fluid">
-					<span class="navbar-brand" asp-controller="Home" asp-action="Index">Tamger</span>
+					<a class="navbar-brand" asp-action="App" asp-controller="Main">Tamger</a>
 					@*<ul class="navbar-nav">
 						<li class="nav-item">
 							<a class="nav-link" data-bs-toggle="modal" data-bs-target="#signUpModal">Регистрация</a>
@@ -81,7 +81,7 @@
 				</div>
 			</div>*@
 		</header>
-		<main class="d-flex justify-content-center align-items-center">
+		<main class="w-100">
 			@RenderBody()
 		</main>
 	</div>

@@ -19,67 +19,47 @@ namespace TaskManager.Controllers
         }
 
         [Authorize]
-        public IActionResult App()
+        public async Task<IActionResult> App()
+        {
+            User user = await _context.Users.FirstAsync(u => u.Username == User.Identity.Name);
+
+            await _context.Entry(user).Collection("Tasks").LoadAsync();
+            foreach(var task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
+
+            return View(user);
+        }
+
+        private async Task<bool> IsTaskExists(string description)
+        {
+            Models.Task task = await _context.Tasks.FirstOrDefaultAsync(t => t.Description == description);
+
+            return task is not null;
+        }
+
+        public IActionResult Add()
         {
             return View();
         }
 
-        //public async Task<IActionResult> App()
-        //{
-        //    if (await IsUserSignedIn())
-        //    {
-        //        User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-        //        await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-        //        foreach (Models.Task task in user.Tasks)
-        //        {
-        //            await _context.Entry(task).Collection("Subtasks").LoadAsync();
-        //        }
+        [HttpPost]
+        public async Task<IActionResult> Add(Models.Task task)
+        {
+            if(!await IsTaskExists(task.Description))
+            {
+                await _context.Tasks.AddAsync(task);
+                (await _context.Users.FirstAsync(u => u.Username == User.Identity.Name)).Tasks.Add(task);
+                await _context.SaveChangesAsync();
 
-        //        ViewBag.Tasks = user.Tasks;
-                
-        //        return View();
-        //    }
+                return RedirectToAction("App", "Main");
+            }
 
-        //    await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
+            ModelState.AddModelError("", "Задача с таким описанием уже существует");
 
-        //    return RedirectToAction("Error", "Home");
-        //}
-
-        //public async Task<IActionResult> Add()
-        //{
-        //    if (await IsUserSignedIn())
-        //    {
-        //        return View();
-        //    }
-
-        //    await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
-
-        //    return RedirectToAction("Error", "Home");
-        //}
-
-        //private async Task<bool> IsTaskExists(string description)
-        //{
-        //    Models.Task task = await _context.Tasks.FirstOrDefaultAsync(t => t.Description == description);
-
-        //    return task is not null;
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> Add(Models.Task task)
-        //{
-        //    if (await IsTaskExists(task.Description))
-        //    {
-        //        await System.IO.File.WriteAllTextAsync("Data/error.txt", "Задача с таким описанием уже существует");
-
-        //        return RedirectToAction("Error", "Home");
-        //    }
-
-        //    await _context.Tasks.AddAsync(task);
-        //    (await _context.Users.FirstAsync(u => u.IsSignedIn == true)).Tasks.Add(task);
-        //    await _context.SaveChangesAsync();
-
-        //    return RedirectToAction("App", "Main");
-        //}
+            return View(task);
+        }
 
         //[HttpPost]
         //public async Task<IActionResult> Edit(Models.Task task)
@@ -124,7 +104,7 @@ namespace TaskManager.Controllers
 
         //            return RedirectToAction("Error", "Home");
         //        }
-                
+
         //        User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
         //        await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
         //        foreach (Models.Task task in user.Tasks)
@@ -143,7 +123,7 @@ namespace TaskManager.Controllers
         //}
 
         //#region Фильтры
-        
+
         //public async Task<IActionResult> FilterByDay()
         //{
         //    if (await IsUserSignedIn())

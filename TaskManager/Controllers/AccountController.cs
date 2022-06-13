@@ -43,20 +43,9 @@ namespace TaskManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            User user = await _context.Users.FirstOrDefaultAsync(
-                u => u.Username == model.Username
-                  && u.Password == model.Password);
+            await Authenticate(model.Username);
 
-            if (user is not null)
-            {
-                await Authenticate(model.Username);
-
-                return RedirectToAction("Index", "Home");
-            }
-
-            ModelState.AddModelError("", "Некорректные логин и(или) пароль");
-            
-            return View(model);
+            return RedirectToAction("App", "Main");
         }
 
         public IActionResult Register()
@@ -68,28 +57,23 @@ namespace TaskManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterModel model)
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
-
-            if(user is null)
+            _context.Users.Add(new()
             {
-                _context.Users.Add(new User { Username = model.Username, Password = model.Password });
-                await _context.SaveChangesAsync();
+                Username = model.Username,
+                Password = model.Password
+            });
+            await _context.SaveChangesAsync();
 
-                await Authenticate(model.Username);
+            await Authenticate(model.Username);
 
-                return RedirectToAction("Index", "Home");
-            }
-
-            ModelState.AddModelError("", "Пользователь уже существует");
-
-            return View(model);
+            return RedirectToAction("App", "Main");
         }
 
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        //public async Task<IActionResult> Logout()
+        //{
+        //    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            return RedirectToAction("Login", "Account");
-        }
+        //    return RedirectToAction("Login", "Account");
+        //}
     }
 }

@@ -1,9 +1,10 @@
 ﻿@model TaskManager.Models.Task
 
-<div>
-	<form>
-		<div class="d-flex justify-content-center">
-			<div class="d-flex flex-column w-25 me-2">
+<div class="d-flex justify-content-center align-items-center h-100">
+	<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+	<form asp-action="Add" asp-controller="Main" class="w-50">
+		<div class="d-flex">
+			<div class="d-flex flex-column w-50 me-2">
 				<div>
 					<label for="description" class="form-label">Описание</label>
 					<input type="text" id="description" class="form-control" asp-for="Description"/>
@@ -27,7 +28,7 @@
 					<button type="submit" class="btn btn-outline-dark">Добавить</button>
 				</div>
 			</div>
-			<div class="d-flex flex-column w-25">
+			<div class="d-flex flex-column w-50">
 				<div class="mb-2">
 					<label for="subtask" class="form-label">Подзадачи</label>
 					<div class="d-flex">
