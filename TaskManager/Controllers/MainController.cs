@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -17,267 +18,262 @@ namespace TaskManager.Controllers
             _context = context;
         }
 
-        #region Проверки
-        
-        private async Task<bool> IsUserSignedIn()
+        [Authorize]
+        public IActionResult App()
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-
-            return user is not null;
+            return View();
         }
 
-        private async Task<bool> IsTaskExists(string description)
-        {
-            Models.Task task = await _context.Tasks.FirstOrDefaultAsync(t => t.Description == description);
+        //public async Task<IActionResult> App()
+        //{
+        //    if (await IsUserSignedIn())
+        //    {
+        //        User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+        //        await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+        //        foreach (Models.Task task in user.Tasks)
+        //        {
+        //            await _context.Entry(task).Collection("Subtasks").LoadAsync();
+        //        }
 
-            return task is not null;
-        }
-
-        #endregion
-
-        public async Task<IActionResult> App()
-        {
-            if (await IsUserSignedIn())
-            {
-                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-                foreach (Models.Task task in user.Tasks)
-                {
-                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
-                }
-
-                ViewBag.Tasks = user.Tasks;
+        //        ViewBag.Tasks = user.Tasks;
                 
-                return View();
-            }
+        //        return View();
+        //    }
 
-            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
+        //    await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return RedirectToAction("Error", "Home");
-        }
+        //    return RedirectToAction("Error", "Home");
+        //}
 
-        public async Task<IActionResult> Add()
-        {
-            if (await IsUserSignedIn())
-            {
-                return View();
-            }
+        //public async Task<IActionResult> Add()
+        //{
+        //    if (await IsUserSignedIn())
+        //    {
+        //        return View();
+        //    }
 
-            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
+        //    await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return RedirectToAction("Error", "Home");
-        }
+        //    return RedirectToAction("Error", "Home");
+        //}
 
-        [HttpPost]
-        public async Task<IActionResult> Add(Models.Task task)
-        {
-            if (await IsTaskExists(task.Description))
-            {
-                await System.IO.File.WriteAllTextAsync("Data/error.txt", "Задача с таким описанием уже существует");
+        //private async Task<bool> IsTaskExists(string description)
+        //{
+        //    Models.Task task = await _context.Tasks.FirstOrDefaultAsync(t => t.Description == description);
 
-                return RedirectToAction("Error", "Home");
-            }
+        //    return task is not null;
+        //}
 
-            await _context.Tasks.AddAsync(task);
-            (await _context.Users.FirstAsync(u => u.IsSignedIn == true)).Tasks.Add(task);
-            await _context.SaveChangesAsync();
+        //[HttpPost]
+        //public async Task<IActionResult> Add(Models.Task task)
+        //{
+        //    if (await IsTaskExists(task.Description))
+        //    {
+        //        await System.IO.File.WriteAllTextAsync("Data/error.txt", "Задача с таким описанием уже существует");
 
-            return RedirectToAction("App", "Main");
-        }
+        //        return RedirectToAction("Error", "Home");
+        //    }
 
-        [HttpPost]
-        public async Task<IActionResult> Edit(Models.Task task)
-        {
-            if (await IsTaskExists(task.Description))
-            {
-                await System.IO.File.WriteAllTextAsync("Data/error.txt", "Задача с таким описанием уже существует");
+        //    await _context.Tasks.AddAsync(task);
+        //    (await _context.Users.FirstAsync(u => u.IsSignedIn == true)).Tasks.Add(task);
+        //    await _context.SaveChangesAsync();
 
-                return RedirectToAction("Error", "Home");
-            }
+        //    return RedirectToAction("App", "Main");
+        //}
 
-            _context.Tasks.Update(task);
-            await _context.SaveChangesAsync();
+        //[HttpPost]
+        //public async Task<IActionResult> Edit(Models.Task task)
+        //{
+        //    if (await IsTaskExists(task.Description))
+        //    {
+        //        await System.IO.File.WriteAllTextAsync("Data/error.txt", "Задача с таким описанием уже существует");
 
-            return RedirectToAction("App", "Main");
-        }
+        //        return RedirectToAction("Error", "Home");
+        //    }
 
-        [HttpPost]
-        public async Task<IActionResult> Remove(int id)
-        {
-            Models.Task queryTask = await _context.Tasks.FindAsync(id);
-            await _context.Entry(queryTask).Collection("Subtasks").LoadAsync();
+        //    _context.Tasks.Update(task);
+        //    await _context.SaveChangesAsync();
 
-            foreach (Subtask subtask in queryTask.Subtasks)
-            {
-                _context.Subtasks.Remove(subtask);
-            }
+        //    return RedirectToAction("App", "Main");
+        //}
 
-            _context.Tasks.Remove(queryTask);
-            await _context.SaveChangesAsync();
+        //[HttpPost]
+        //public async Task<IActionResult> Remove(int id)
+        //{
+        //    Models.Task queryTask = await _context.Tasks.FindAsync(id);
+        //    await _context.Entry(queryTask).Collection("Subtasks").LoadAsync();
 
-            return RedirectToAction("App", "Main");
-        }
+        //    foreach (Subtask subtask in queryTask.Subtasks)
+        //    {
+        //        _context.Subtasks.Remove(subtask);
+        //    }
 
-        public async Task<IActionResult> Find(string description)
-        {
-            if (await IsUserSignedIn())
-            {
-                if (description is null)
-                {
-                    await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не ввели описание задачи");
+        //    _context.Tasks.Remove(queryTask);
+        //    await _context.SaveChangesAsync();
 
-                    return RedirectToAction("Error", "Home");
-                }
+        //    return RedirectToAction("App", "Main");
+        //}
+
+        //public async Task<IActionResult> Find(string description)
+        //{
+        //    if (await IsUserSignedIn())
+        //    {
+        //        if (description is null)
+        //        {
+        //            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не ввели описание задачи");
+
+        //            return RedirectToAction("Error", "Home");
+        //        }
                 
-                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-                foreach (Models.Task task in user.Tasks)
-                {
-                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
-                }
+        //        User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+        //        await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+        //        foreach (Models.Task task in user.Tasks)
+        //        {
+        //            await _context.Entry(task).Collection("Subtasks").LoadAsync();
+        //        }
 
-                ViewBag.Tasks = user.Tasks.Where(t => t.Description.Contains(description));
+        //        ViewBag.Tasks = user.Tasks.Where(t => t.Description.Contains(description));
 
-                return View("App");
-            }
+        //        return View("App");
+        //    }
 
-            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
+        //    await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return RedirectToAction("Error", "Home");
-        }
+        //    return RedirectToAction("Error", "Home");
+        //}
 
-        #region Фильтры
+        //#region Фильтры
         
-        public async Task<IActionResult> FilterByDay()
-        {
-            if (await IsUserSignedIn())
-            {
-                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-                foreach (Models.Task task in user.Tasks)
-                {
-                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
-                }
+        //public async Task<IActionResult> FilterByDay()
+        //{
+        //    if (await IsUserSignedIn())
+        //    {
+        //        User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+        //        await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+        //        foreach (Models.Task task in user.Tasks)
+        //        {
+        //            await _context.Entry(task).Collection("Subtasks").LoadAsync();
+        //        }
 
-                ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date == DateTime.Today);
+        //        ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date == DateTime.Today);
 
-                return View("App");
-            }
+        //        return View("App");
+        //    }
 
-            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
+        //    await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return RedirectToAction("Error", "Home");
-        }
+        //    return RedirectToAction("Error", "Home");
+        //}
 
-        public async Task<IActionResult> FilterByWeek()
-        {
-            if (await IsUserSignedIn())
-            {
-                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-                foreach (Models.Task task in user.Tasks)
-                {
-                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
-                }
+        //public async Task<IActionResult> FilterByWeek()
+        //{
+        //    if (await IsUserSignedIn())
+        //    {
+        //        User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+        //        await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+        //        foreach (Models.Task task in user.Tasks)
+        //        {
+        //            await _context.Entry(task).Collection("Subtasks").LoadAsync();
+        //        }
 
-                ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddDays(7));
+        //        ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddDays(7));
 
-                return View("App");
-            }
+        //        return View("App");
+        //    }
 
-            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
+        //    await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return RedirectToAction("Error", "Home");
-        }
+        //    return RedirectToAction("Error", "Home");
+        //}
 
-        public async Task<IActionResult> FilterByMonth()
-        {
-            if (await IsUserSignedIn())
-            {
-                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-                foreach (Models.Task task in user.Tasks)
-                {
-                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
-                }
+        //public async Task<IActionResult> FilterByMonth()
+        //{
+        //    if (await IsUserSignedIn())
+        //    {
+        //        User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+        //        await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+        //        foreach (Models.Task task in user.Tasks)
+        //        {
+        //            await _context.Entry(task).Collection("Subtasks").LoadAsync();
+        //        }
 
-                ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddMonths(1));
+        //        ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddMonths(1));
 
-                return View("App");
-            }
+        //        return View("App");
+        //    }
 
-            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
+        //    await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return RedirectToAction("Error", "Home");
-        }
+        //    return RedirectToAction("Error", "Home");
+        //}
 
-        public async Task<IActionResult> FilterByYear()
-        {
-            if (await IsUserSignedIn())
-            {
-                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-                foreach (Models.Task task in user.Tasks)
-                {
-                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
-                }
+        //public async Task<IActionResult> FilterByYear()
+        //{
+        //    if (await IsUserSignedIn())
+        //    {
+        //        User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+        //        await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+        //        foreach (Models.Task task in user.Tasks)
+        //        {
+        //            await _context.Entry(task).Collection("Subtasks").LoadAsync();
+        //        }
 
-                ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddYears(1));
+        //        ViewBag.Tasks = user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddYears(1));
 
-                return View("App");
-            }
+        //        return View("App");
+        //    }
 
-            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
+        //    await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return RedirectToAction("Error", "Home");
-        }
+        //    return RedirectToAction("Error", "Home");
+        //}
 
-        #endregion
+        //#endregion
 
-        #region Сортировки
+        //#region Сортировки
 
-        public async Task<IActionResult> SortByPriority()
-        {
-            if (await IsUserSignedIn())
-            {
-                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-                foreach (Models.Task task in user.Tasks)
-                {
-                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
-                }
+        //public async Task<IActionResult> SortByPriority()
+        //{
+        //    if (await IsUserSignedIn())
+        //    {
+        //        User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+        //        await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+        //        foreach (Models.Task task in user.Tasks)
+        //        {
+        //            await _context.Entry(task).Collection("Subtasks").LoadAsync();
+        //        }
 
-                ViewBag.Tasks = user.Tasks.OrderByDescending(t => t.Priority);
+        //        ViewBag.Tasks = user.Tasks.OrderByDescending(t => t.Priority);
 
-                return View("App");
-            }
+        //        return View("App");
+        //    }
 
-            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
+        //    await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return RedirectToAction("Error", "Home");
-        }
+        //    return RedirectToAction("Error", "Home");
+        //}
 
-        public async Task<IActionResult> SortByDate()
-        {
-            if (await IsUserSignedIn())
-            {
-                User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-                foreach (Models.Task task in user.Tasks)
-                {
-                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
-                }
+        //public async Task<IActionResult> SortByDate()
+        //{
+        //    if (await IsUserSignedIn())
+        //    {
+        //        User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+        //        await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
+        //        foreach (Models.Task task in user.Tasks)
+        //        {
+        //            await _context.Entry(task).Collection("Subtasks").LoadAsync();
+        //        }
 
-                ViewBag.Tasks = user.Tasks.OrderBy(t => t.EndDate);
+        //        ViewBag.Tasks = user.Tasks.OrderBy(t => t.EndDate);
 
-                return View("App");
-            }
+        //        return View("App");
+        //    }
 
-            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
+        //    await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
 
-            return RedirectToAction("Error", "Home");
-        }
+        //    return RedirectToAction("Error", "Home");
+        //}
 
-        #endregion
+        //#endregion
     }
 }

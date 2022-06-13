@@ -1,6 +1,5 @@
 ﻿@model TaskManager.Models.Task
 
-<partial name="_Menu"/>
 <div>
 	<form>
 		<div class="d-flex justify-content-center">
@@ -29,7 +28,6 @@
 				</div>
 			</div>
 			<div class="d-flex flex-column w-25">
-				
 				<div class="mb-2">
 					<label for="subtask" class="form-label">Подзадачи</label>
 					<div class="d-flex">
@@ -48,7 +46,7 @@
 				</div>
 				<div class="mb-2">
 					<label for="attachments" class="form-label">Прикреплённые файлы</label>
-					<input id="attachments" type="file" class="form-control" multiple>
+					<input id="attachments" type="file" class="form-control" multiple/>
 					<ul id="attachmentsList" class="list-group mt-2"></ul>
 				</div>
 			</div>

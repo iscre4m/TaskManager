@@ -1,5 +1,13 @@
 ﻿@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@1,500&display=swap');
 
+html, body, body>div {
+    height: 100%;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
 .icon {
     width: 1.5em;
     height: 1.5em;
