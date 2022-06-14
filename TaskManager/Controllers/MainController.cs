@@ -29,7 +29,7 @@ namespace TaskManager.Controllers
                 await _context.Entry(task).Collection("Subtasks").LoadAsync();
             }
 
-            return View(user);
+            return View(user.Tasks);
         }
 
         public IActionResult Add()
@@ -41,7 +41,7 @@ namespace TaskManager.Controllers
         public async Task<IActionResult> Add(Models.Task task)
         {
             if(await _context.Tasks.FirstOrDefaultAsync(
-                t => t.Description == task.Description) is not null)
+                t => t.Description == task.Description) is null)
             {
                 await _context.Tasks.AddAsync(task);
                 (await _context.Users.FirstAsync(u => u.Username == User.Identity.Name)).Tasks.Add(task);
@@ -111,33 +111,23 @@ namespace TaskManager.Controllers
             return RedirectToAction("App", "Main");
         }
 
-        //public async Task<IActionResult> Find(string description)
-        //{
-        //    if (await IsUserSignedIn())
-        //    {
-        //        if (description is null)
-        //        {
-        //            await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не ввели описание задачи");
+        public async Task<IActionResult> Find(string description)
+        {
+            User user = await _context.Users.FirstAsync(u => u.Username == User.Identity.Name);
 
-        //            return RedirectToAction("Error", "Home");
-        //        }
+            await _context.Entry(user).Collection("Tasks").LoadAsync();
+            foreach (var task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
 
-        //        User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-        //        await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-        //        foreach (Models.Task task in user.Tasks)
-        //        {
-        //            await _context.Entry(task).Collection("Subtasks").LoadAsync();
-        //        }
+            if(description is null)
+            {
+                description = string.Empty;
+            }
 
-        //        ViewBag.Tasks = user.Tasks.Where(t => t.Description.Contains(description));
-
-        //        return View("App");
-        //    }
-
-        //    await System.IO.File.WriteAllTextAsync("Data/error.txt", "Вы не вошли в аккаунт");
-
-        //    return RedirectToAction("Error", "Home");
-        //}
+            return View(user.Tasks.Where(t => t.Description.Contains(description)).ToList());
+        }
 
         //#region Фильтры
 
