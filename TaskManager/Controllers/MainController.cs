@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using TaskManager.Data;
@@ -16,105 +18,210 @@ namespace TaskManager.Controllers
             _context = context;
         }
 
+        [Authorize]
         public async Task<IActionResult> App()
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+            User user = await _context.Users.FirstAsync(u => u.Username == User.Identity.Name);
 
-            if (user is not null)
+            await _context.Entry(user).Collection("Tasks").LoadAsync();
+            foreach(var task in user.Tasks)
             {
-                await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-                foreach(Models.Task task in user.Tasks)
-                {
-                    await _context.Entry(task).Collection("Subtasks").LoadAsync();
-                }
-                ViewBag.User = user;
-                ViewBag.Tasks = user.Tasks;
-
-                return View();
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
             }
 
-            ViewBag.Message = "Вы не вошли в аккаунт";
-
-            return View("Error");
+            return View(user.Tasks);
         }
 
-        public async Task<IActionResult> Error()
+        #region CRUD
+
+        [Authorize]
+        public IActionResult Add()
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
-
-            if (user is not null)
-            {
-                return View();
-            }
-
-            return Redirect("/Home/Index");
+            return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Add(Models.Task task)
         {
-            Models.Task queryTask = await _context.Tasks.FirstOrDefaultAsync(t => t.Description == task.Description);
-            
-            if (queryTask is not null)
+            if(await _context.Tasks.FirstOrDefaultAsync(
+                t => t.Description == task.Description) is null)
             {
-                ViewBag.Message = "Задача с таким описанием уже существует";
+                await _context.Tasks.AddAsync(task);
+                (await _context.Users.FirstAsync(u => u.Username == User.Identity.Name)).Tasks.Add(task);
+                await _context.SaveChangesAsync();
 
-                return View("Error");
+                return RedirectToAction("App", "Main");
             }
 
-            await _context.Tasks.AddAsync(task);
-            (await _context.Users.FirstAsync(u => u.IsSignedIn == true)).Tasks.Add(task);
-            await _context.SaveChangesAsync();
+            ModelState.AddModelError("", "Задача с таким описанием уже существует");
 
-            return RedirectToAction("App", "Main");
+            return View(task);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Edit(int id)
+        {
+            Models.Task task = await _context.Tasks.FindAsync(id);
+
+            await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            await _context.Entry(task).Collection("Hashtags").LoadAsync();
+            await _context.Entry(task).Collection("Attachments").LoadAsync();
+
+            return View(task);
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(Models.Task task)
         {
-            _context.Tasks.Update(task);
-            await _context.SaveChangesAsync();
+            if(_context.Tasks.Where(t => t.Description == task.Description).Count() < 2)
+            {
+                _context.Tasks.Update(task);
+                await _context.SaveChangesAsync();
 
-            return RedirectToAction("App", "Main");
+                return RedirectToAction("App", "Main");
+            }
+
+            ModelState.AddModelError("", "Задача с таким описанием уже существует");
+
+            return View(task);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Remove(Models.Task task)
+        public async Task<IActionResult> Remove(int id)
         {
-            Models.Task queryTask = await _context.Tasks.FindAsync(task.Id);
+            Models.Task queryTask = await _context.Tasks.FindAsync(id);
+
             await _context.Entry(queryTask).Collection("Subtasks").LoadAsync();
-            
             foreach (Subtask subtask in queryTask.Subtasks)
             {
                 _context.Subtasks.Remove(subtask);
             }
+
+            await _context.Entry(queryTask).Collection("Hashtags").LoadAsync();
+            foreach (Hashtag hashtag in queryTask.Hashtags)
+            {
+                _context.Hashtags.Remove(hashtag);
+            }
+            
+            await _context.Entry(queryTask).Collection("Attachments").LoadAsync();
+            foreach (Attachment attachment in queryTask.Attachments)
+            {
+                _context.Attachments.Remove(attachment);
+            }
+
             _context.Tasks.Remove(queryTask);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("App", "Main");
         }
 
+        [Authorize]
         public async Task<IActionResult> Find(string description)
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.IsSignedIn == true);
+            User user = await _context.Users.FirstAsync(u => u.Username == User.Identity.Name);
 
-            if (user is null)
-            {
-                ViewBag.Message = "Вы не вошли в аккаунт";
-
-                return View("Error");
-            }
-
-            await _context.Entry(user).Collection(u => u.Tasks).LoadAsync();
-            foreach (Models.Task task in user.Tasks)
+            await _context.Entry(user).Collection("Tasks").LoadAsync();
+            foreach (var task in user.Tasks)
             {
                 await _context.Entry(task).Collection("Subtasks").LoadAsync();
             }
-            
-            ViewBag.User = user;
-            ViewBag.Tasks = _context.Tasks.Where(t => t.Description.Contains(description)).Include(t => t.Subtasks);
 
-            return View("App");
+            if(description is null)
+            {
+                description = string.Empty;
+            }
+
+            return View("App", user.Tasks.Where(t => t.Description.Contains(description)).ToList());
         }
+
+        #endregion
+
+        #region Фильтры
+
+        public async Task<IActionResult> FilterByDay()
+        {
+            User user = await _context.Users.FirstAsync(u => u.Username == User.Identity.Name);
+
+            await _context.Entry(user).Collection("Tasks").LoadAsync();
+            foreach (var task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
+
+            return View("App", user.Tasks.Where(t => t.EndDate.Date == DateTime.Today).ToList());
+        }
+
+        public async Task<IActionResult> FilterByWeek()
+        {
+            User user = await _context.Users.FirstAsync(u => u.Username == User.Identity.Name);
+
+            await _context.Entry(user).Collection("Tasks").LoadAsync();
+            foreach (var task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
+
+            return View("App", user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddDays(7)).ToList());
+        }
+
+        public async Task<IActionResult> FilterByMonth()
+        {
+            User user = await _context.Users.FirstAsync(u => u.Username == User.Identity.Name);
+
+            await _context.Entry(user).Collection("Tasks").LoadAsync();
+            foreach (var task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
+
+            return View("App", user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddMonths(1)).ToList());
+        }
+
+        public async Task<IActionResult> FilterByYear()
+        {
+            User user = await _context.Users.FirstAsync(u => u.Username == User.Identity.Name);
+
+            await _context.Entry(user).Collection("Tasks").LoadAsync();
+            foreach (var task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
+
+            return View("App", user.Tasks.Where(t => t.EndDate.Date <= DateTime.Today.AddYears(1)).ToList());
+        }
+
+        #endregion
+
+        #region Сортировки
+
+        [Authorize]
+        public async Task<IActionResult> SortByPriority()
+        {
+            User user = await _context.Users.FirstAsync(u => u.Username == User.Identity.Name);
+
+            await _context.Entry(user).Collection("Tasks").LoadAsync();
+            foreach (var task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
+
+            return View("App", user.Tasks.OrderByDescending(t => t.Priority).ToList());
+        }
+
+        [Authorize]
+        public async Task<IActionResult> SortByDate()
+        {
+            User user = await _context.Users.FirstAsync(u => u.Username == User.Identity.Name);
+
+            await _context.Entry(user).Collection("Tasks").LoadAsync();
+            foreach (var task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
+
+            return View("App", user.Tasks.OrderBy(t => t.EndDate).ToList());
+        }
+
+        #endregion
     }
 }

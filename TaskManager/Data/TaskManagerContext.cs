@@ -3,7 +3,7 @@ using TaskManager.Models;
 
 namespace TaskManager.Data
 {
-    public sealed class TaskManagerContext : DbContext
+    public class TaskManagerContext : DbContext
     {
         public TaskManagerContext(DbContextOptions<TaskManagerContext> options)
             : base(options)

@@ -1,89 +1,83 @@
-﻿@model User
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
 	<title>Планировщик задач @ViewData["Title"]</title>
 	<meta name="content" content="width=device-width;initial-scale=1.0"/>
-	<link rel="stylesheet" asp-href-include="~/lib/bootstrap/dist/css/bootstrap.css" asp-append-version="true"/>
+	<link rel="stylesheet" asp-href-include="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true"/>
 	<link rel="stylesheet" asp-href-include="~/styles.css" asp-append-version="true"/>
 </head>
 <body>
-<header>
-	<nav class="navbar navbar-expand-lg bg-light navbar-light">
-		<div class="container-fluid">
-			<a class="navbar-brand" asp-controller="Home" asp-action="Index">Планировщик задач</a>
-			<ul class="navbar-nav">
-				@await RenderSectionAsync("navItems", true)
-			</ul>
-		</div>
-	</nav>
-	<div id="signUpModal" class="modal fade" tabindex="-1">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<input type="button" class="btn-close" data-bs-dismiss="modal">
+	<div class="d-flex flex-column align-items-center">
+		<header class="w-100">
+			<nav class="navbar navbar-expand-lg bg-light navbar-light">
+				<div class="container-fluid">
+					<a class="navbar-brand" asp-action="App" asp-controller="Main">Tamger</a>
+					@await RenderSectionAsync("navbar", false)
 				</div>
-				<div class="modal-body">
-					<form id="signUpForm" method="post" asp-controller="Authentication" asp-action="SignUp">
-						<div class="mb-3">
-							<label for="signUpLogin" class="form-label">Логин</label>
-							<input type="text" class="form-control" id="signUpLogin" asp-for="Login">
+			</nav>
+			@*<div id="signUpModal" class="modal fade" tabindex="-1">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<input type="button" class="btn-close" data-bs-dismiss="modal">
 						</div>
-						<div class="mb-3">
-							<label for="signUpPassword" class="form-label">Пароль</label>
-							<input type="password" class="form-control" id="signUpPassword" asp-for="Password">
+						<div class="modal-body">
+							<form id="signUpForm" method="post" asp-controller="Authentication" asp-action="SignUp">
+								<div class="mb-3">
+									<label for="signUpLogin" class="form-label">Логин</label>
+									<input type="text" class="form-control" id="signUpLogin" asp-for="Login">
+								</div>
+								<div class="mb-3">
+									<label for="signUpPassword" class="form-label">Пароль</label>
+									<input type="password" class="form-control" id="signUpPassword" asp-for="Password">
+								</div>
+								<div class="mb-3">
+									<label for="passwordConfirm" class="form-label">Подтвердите пароль</label>
+									<input type="password" class="form-control" id="passwordConfirm" asp-for="PasswordConfirm">
+								</div>
+								<button type="submit" class="btn btn-outline-dark">Регистрация</button>
+								<div id="signUpValidation" class="d-flex flex-column">
+									<span class="text-danger" asp-validation-for="Login"></span>
+									<span class="text-danger" asp-validation-for="Password"></span>
+									<span class="text-danger" asp-validation-for="PasswordConfirm"></span>
+								</div>
+							</form>
 						</div>
-						<div class="mb-3">
-							<label for="passwordConfirm" class="form-label">Подтвердите пароль</label>
-							<input type="password" class="form-control" id="passwordConfirm" asp-for="PasswordConfirm">
-						</div>
-						<button type="submit" class="btn btn-outline-dark">Регистрация</button>
-						<div id="signUpValidation" class="d-flex flex-column">
-							<span class="text-danger" asp-validation-for="Login"></span>
-							<span class="text-danger" asp-validation-for="Password"></span>
-							<span class="text-danger" asp-validation-for="PasswordConfirm"></span>
-						</div>
-					</form>
+					</div>
 				</div>
 			</div>
-		</div>
+			<div id="signInModal" class="modal fade" tabindex="-1">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Окно входа</h5>
+							<input type="button" class="btn-close" data-bs-dismiss="modal">
+						</div>
+						<div class="modal-body">
+							<form id="signInForm" method="post" asp-controller="Authentication" asp-action="SignIn">
+								<div class="mb-3">
+									<label for="signInLogin" class="form-label">Логин</label>
+									<input type="text" class="form-control" id="signInLogin" asp-for="SignInLogin">
+								</div>
+								<div class="mb-3">
+									<label for="signInPassword" class="form-label">Пароль</label>
+									<input type="password" class="form-control" id="signInPassword" asp-for="SignInPassword">
+								</div>
+								<button type="submit" class="btn btn-outline-dark">Вход</button>
+								<div id="signInValidation" class="d-flex flex-column">
+									<span class="text-danger" asp-validation-for="SignInLogin"></span>
+									<span class="text-danger" asp-validation-for="SignInPassword"></span>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>*@
+		</header>
+		<main class="w-100">
+			@RenderBody()
+		</main>
 	</div>
-	<div id="signInModal" class="modal fade" tabindex="-1">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Окно входа</h5>
-					<input type="button" class="btn-close" data-bs-dismiss="modal">
-				</div>
-				<div class="modal-body">
-					<form id="signInForm" method="post" asp-controller="Authentication" asp-action="SignIn">
-						<div class="mb-3">
-							<label for="signInLogin" class="form-label">Логин</label>
-							<input type="text" class="form-control" id="signInLogin" asp-for="SignInLogin">
-						</div>
-						<div class="mb-3">
-							<label for="signInPassword" class="form-label">Пароль</label>
-							<input type="password" class="form-control" id="signInPassword" asp-for="SignInPassword">
-						</div>
-						<button type="submit" class="btn btn-outline-dark">Вход</button>
-						<div id="signInValidation" class="d-flex flex-column">
-							<span class="text-danger" asp-validation-for="SignInLogin"></span>
-							<span class="text-danger" asp-validation-for="SignInPassword"></span>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>	
-</header>
-<main>
-	@RenderBody()
-</main>
-<script src="~/lib/jquery/jquery/dist/jquery.js"></script>
-<script src="~/scriptsJQuery.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
-<script src="~/lib/jquery/jquery-validation/dist/jquery.validate.js"></script>
-<script src="~/lib/jquery/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+	@await RenderSectionAsync("scripts", false)
 </body>
 </html>
