@@ -1,7 +1,6 @@
 ﻿@model TaskManager.Models.Task
 
 <div class="d-flex flex-column justify-content-center align-items-center h-100">
-	<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 	<form asp-action="Edit" asp-controller="Main" class="w-50">
 		<input type="hidden" asp-for="Id"/>
 		<div class="d-flex">
@@ -54,10 +53,12 @@
 			</div>
 		</div>
 	</form>
+	<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 </div>
 
 @section scripts {
 	<script src="~/lib/jquery/jquery/dist/jquery.min.js"></script>
+	<script src="~/scripts/editScripts.js"></script>
 	<script src="~/scripts/dateScripts.js"></script>
 	<script src="~/scripts/subtaskScripts.js"></script>
 	<script src="~/scripts/hashtagScripts.js"></script>

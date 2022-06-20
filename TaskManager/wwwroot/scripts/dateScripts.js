@@ -1,4 +1,4 @@
-﻿$(function() {
+﻿$(() => {
     let maxDate = new Date();
     maxDate.setFullYear(maxDate.getFullYear() + 1);
     

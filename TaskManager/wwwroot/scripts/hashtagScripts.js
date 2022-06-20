@@ -1,4 +1,4 @@
-﻿$(function() {
+﻿$(() => {
     $("#addHashtagButton").click(function () {
         if ($("#hashtag").val() === "") {
             return;
@@ -19,12 +19,12 @@
 
         $("#hashtagsList").addClass("mt-2");
         $("#hashtagsList").append(`<li class="list-group-item">
-                                        <div class="d-flex justify-content-between">
-                                            <input type="hidden" name="Hashtags[${hashtagsCount}].value" value="${$("#hashtag").val()}">
-                                            ${$("#hashtag").val()}
-                                            <input id="${closeButtonId}" type="button" class="btn-close">
-                                        </div>
-                                    </li>`);
+                                       <div class="d-flex justify-content-between">
+                                           <input type="hidden" name="Hashtags[${hashtagsCount}].value" value="${$("#hashtag").val()}">
+                                           ${$("#hashtag").val()}
+                                           <input id="${closeButtonId}" type="button" class="btn-close">
+                                       </div>
+                                   </li>`);
 
         $(`#${closeButtonId}`).click(function () {
             $(this).parent().parent().remove();
