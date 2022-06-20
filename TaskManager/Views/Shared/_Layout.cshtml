@@ -12,14 +12,7 @@
 			<nav class="navbar navbar-expand-lg bg-light navbar-light">
 				<div class="container-fluid">
 					<a class="navbar-brand" asp-action="App" asp-controller="Main">Tamger</a>
-					@*<ul class="navbar-nav">
-						<li class="nav-item">
-							<a class="nav-link" data-bs-toggle="modal" data-bs-target="#signUpModal">Регистрация</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" data-bs-toggle="modal" data-bs-target="#signInModal">Вход</a>
-						</li>
-					</ul>*@
+					@await RenderSectionAsync("navbar", false)
 				</div>
 			</nav>
 			@*<div id="signUpModal" class="modal fade" tabindex="-1">

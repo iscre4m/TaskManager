@@ -43,6 +43,15 @@ namespace TaskManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel model)
         {
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
+
+            if (user is null)
+            {
+                ModelState.AddModelError("", "Пользователь не существует");
+
+                return View(model);
+            }
+
             await Authenticate(model.Username);
 
             return RedirectToAction("App", "Main");
@@ -69,11 +78,11 @@ namespace TaskManager.Controllers
             return RedirectToAction("App", "Main");
         }
 
-        //public async Task<IActionResult> Logout()
-        //{
-        //    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-        //    return RedirectToAction("Login", "Account");
-        //}
+            return RedirectToAction("Login", "Account");
+        }
     }
 }
