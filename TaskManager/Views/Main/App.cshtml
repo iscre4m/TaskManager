@@ -52,20 +52,41 @@
 			</ul>
 		</div>
 	</nav>
-	<ul>
+	<div class="container-fluid d-flex justify-content-evenly">
 		@foreach(var task in Model)
 		{
-			<li>
-				@task.Description
-				<ul>
+			<div class="card border-dark mb-3" style="max-width: 18rem;">
+				@switch (@task.Priority)
+				{
+					case Priority.Низкий:
+						<div class="card-header text-success">Низкий приоритет, до @task.EndDate.Date.ToShortDateString()</div>
+						break;
+					case Priority.Средний:
+						<div class="card-header text-warning">Средний приоритет, до @task.EndDate.Date.ToShortDateString()</div>
+						break;
+					case Priority.Высокий:
+						<div class="card-header text-danger">Высокий приоритет, до @task.EndDate.Date.ToShortDateString()</div>
+						break;
+				}
+				<div class="card-body text-dark">
+					<h5 class="card-title">@task.Description</h5>
+					@if(task.Comment != string.Empty)
+					{
+						<p class="card-text">@task.Comment</p>
+					}
+				</div>
+				@if(task.Subtasks.Count > 0)
+				{
+					<ul class="list-group list-group-flush">
 					@foreach(var subtask in task.Subtasks)
 					{
-						<li>@subtask.Description</li>
+						<li class="list-group-item">@subtask.Description</li>
 					}
 				</ul>
-			</li>
+				}
+			</div>
 		}
-	</ul>
+	</div>
 </div>
 <div id="editModal" class="modal fade" tabindex="-1">
 	<div class="modal-dialog">

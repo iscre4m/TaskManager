@@ -43,7 +43,9 @@ namespace TaskManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(Models.Task task)
         {
-            if(await _context.Tasks.AnyAsync(t => t.Description == task.Description))
+            User user = await _context.Users.FirstAsync(u => u.Username == User.Identity.Name);
+
+            if(user.Tasks.Any(t => t.Description == task.Description))
             {
                 ModelState.AddModelError("", "Задача с таким описанием уже существует");
 
@@ -102,7 +104,9 @@ namespace TaskManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(Models.Task task)
         {
-            if(await _context.Tasks.AnyAsync(t => t.Description == task.Description && t.Id != task.Id))
+            User user = await _context.Users.FirstAsync(u => u.Username == User.Identity.Name);
+
+            if (user.Tasks.Any(t => t.Description == task.Description && t.Id != task.Id))
             {
                 ModelState.AddModelError("", "Задача с таким описанием уже существует");
 
@@ -111,7 +115,7 @@ namespace TaskManager.Controllers
 
             await RemoveTaskFromDatabase(task.Id);
             await _context.Tasks.AddAsync(task);
-            (await _context.Users.FirstAsync(u => u.Username == User.Identity.Name)).Tasks.Add(task);
+            user.Tasks.Add(task);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("App", "Main");
@@ -147,7 +151,7 @@ namespace TaskManager.Controllers
                 description = string.Empty;
             }
 
-            return View("App", user.Tasks.Where(t => t.Description.Contains(description)).ToList());
+            return View("App", user.Tasks.Where(t => t.Description.ToLower().Contains(description.ToLower())).ToList());
         }
 
         #endregion
