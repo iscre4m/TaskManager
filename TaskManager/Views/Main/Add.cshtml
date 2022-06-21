@@ -1,7 +1,6 @@
 ﻿@model TaskManager.Models.Task
 
 <div class="d-flex flex-column justify-content-center align-items-center h-100">
-	<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 	<form asp-action="Add" asp-controller="Main" class="w-50">
 		<div class="d-flex">
 			<div class="d-flex flex-column w-50 me-2">
@@ -53,6 +52,7 @@
 			</div>
 		</div>
 	</form>
+	<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 </div>
 
 @section scripts {

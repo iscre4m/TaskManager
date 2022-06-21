@@ -43,24 +43,28 @@ namespace TaskManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(Models.Task task)
         {
-            if(await _context.Tasks.FirstOrDefaultAsync(
-                t => t.Description == task.Description) is null)
+            if(await _context.Tasks.AnyAsync(t => t.Description == task.Description))
             {
-                await _context.Tasks.AddAsync(task);
-                (await _context.Users.FirstAsync(u => u.Username == User.Identity.Name)).Tasks.Add(task);
-                await _context.SaveChangesAsync();
+                ModelState.AddModelError("", "Задача с таким описанием уже существует");
 
-                return RedirectToAction("App", "Main");
+                return View(task);
             }
 
-            ModelState.AddModelError("", "Задача с таким описанием уже существует");
+            await _context.Tasks.AddAsync(task);
+            (await _context.Users.FirstAsync(u => u.Username == User.Identity.Name)).Tasks.Add(task);
+            await _context.SaveChangesAsync();
 
-            return View(task);
+            return RedirectToAction("App", "Main");
         }
 
         [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
+            if (id == 0)
+            {
+                return RedirectToAction("App", "Main");
+            }
+
             Models.Task task = await _context.Tasks.FindAsync(id);
 
             await _context.Entry(task).Collection("Subtasks").LoadAsync();
@@ -73,22 +77,27 @@ namespace TaskManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(Models.Task task)
         {
-            if(_context.Tasks.Where(t => t.Description == task.Description).Count() < 2)
+            if(await _context.Tasks.AnyAsync(t => t.Description == task.Description && t.Id != task.Id))
             {
-                _context.Tasks.Update(task);
-                await _context.SaveChangesAsync();
+                ModelState.AddModelError("", "Задача с таким описанием уже существует");
 
-                return RedirectToAction("App", "Main");
+                return View(task);
             }
 
-            ModelState.AddModelError("", "Задача с таким описанием уже существует");
+            _context.Tasks.Update(task);
+            await _context.SaveChangesAsync();
 
-            return View(task);
+            return RedirectToAction("App", "Main");
         }
 
         [HttpPost]
         public async Task<IActionResult> Remove(int id)
         {
+            if (id == 0)
+            {
+                return RedirectToAction("App", "Main");
+            }
+
             Models.Task queryTask = await _context.Tasks.FindAsync(id);
 
             await _context.Entry(queryTask).Collection("Subtasks").LoadAsync();

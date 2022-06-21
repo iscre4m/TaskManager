@@ -1,4 +1,16 @@
 ﻿$(() => {
+    if ($("#subtasksList").children().length > 0) {
+        $("#subtasksList").addClass("mt-2");
+    }
+
+    $(".removeSubtask").click(function () {
+        $(this).parent().parent().remove();
+
+        if ($("#subtasksList").children().length === 0) {
+            $("#subtasksList").removeClass("mt-2");
+        }
+    });
+
     $("#addSubtaskButton").click(function () {
         if ($("#subtask").val() === "") {
             return;
@@ -11,18 +23,17 @@
         }
 
         let subtasksCount = $("#subtasksList").children().length;
-        const closeButtonId = `removeSubtask${subtasksCount}`;
 
         $("#subtasksList").addClass("mt-2");
         $("#subtasksList").append(`<li class="list-group-item">
                                        <div class="d-flex justify-content-between">
                                            <input type="hidden" name="Subtasks[${subtasksCount}].description" value="${$("#subtask").val()}">
                                            ${$("#subtask").val()}
-                                           <input id="${closeButtonId}" type="button" class="btn-close">
+                                           <input type="button" class="btn-close removeSubtask">
                                        </div>
                                    </li>`);
 
-        $(`#${closeButtonId}`).click(function () {
+        $(".removeSubtask").click(function () {
             $(this).parent().parent().remove();
 
             if ($("#subtasksList").children().length === 0) {

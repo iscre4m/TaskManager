@@ -35,7 +35,18 @@
 						<input id="subtask" type="text" class="form-control me-2"/>
 						<button id="addSubtaskButton" type="button" class="btn btn-outline-dark">Добавить</button>
 					</div>
-					<ul id="subtasksList" class="list-group"></ul>
+					<ul id="subtasksList" class="list-group">
+						@for(int i = 0; i < Model.Subtasks.Count; i++)
+						{
+							<li class="list-group-item">
+								<div class="d-flex justify-content-between">
+									<input type="hidden" asp-for="Subtasks[i].Description"/>
+									@Model.Subtasks[i].Description
+									<input type="button" class="btn-close removeSubtask"/>
+								</div>
+							</li>
+						}
+					</ul>
 				</div>
 				<div class="mb-2">
 					<label for="hashtag" class="form-label">Хештеги</label>
@@ -43,12 +54,34 @@
 						<input id="hashtag" type="text" class="form-control me-2"/>
 						<button id="addHashtagButton" type="button" class="btn btn-outline-dark">Добавить</button>
 					</div>
-					<ul id="hashtagsList" class="list-group"></ul>
+					<ul id="hashtagsList" class="list-group">
+						@for(int i = 0; i < Model.Hashtags.Count; i++)
+						{
+							<li class="list-group-item">
+								<div class="d-flex justify-content-between">
+									<input type="hidden" asp-for="Hashtags[i].Value"/>
+									@Model.Hashtags[i].Value
+									<input type="button" class="btn-close removeHashtag"/>
+								</div>
+							</li>
+						}
+					</ul>
 				</div>
 				<div class="mb-2">
 					<label for="attachments" class="form-label">Прикреплённые файлы</label>
 					<input id="attachments" type="file" class="form-control" multiple/>
-					<ul id="attachmentsList" class="list-group mt-2"></ul>
+					<ul id="attachmentsList" class="list-group mt-2">
+						@for(int i = 0; i < Model.Attachments.Count; i++)
+						{
+							<li class="list-group-item">
+								<div class="d-flex justify-content-between">
+									<input type="hidden" asp-for="Attachments[i].Path"/>
+									@Model.Attachments[i].Path
+									<input type="button" class="btn-close removeAttachment"/>
+								</div>
+							</li>
+						}
+					</ul>
 				</div>
 			</div>
 		</div>

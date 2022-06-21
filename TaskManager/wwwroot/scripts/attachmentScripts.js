@@ -1,4 +1,8 @@
 ﻿$(() => {
+    $(".removeAttachment").click(function () {
+        $(this).parent().parent().remove();
+    });
+
     $("#attachments").change(function () {
         $("#attachmentsList").children().remove();
         let index = 0;
@@ -9,11 +13,11 @@
                                               <div class="d-flex justify-content-between">
                                                   <input type="hidden" name="Attachments[${index}].path" value="${file.name}">
                                                   ${file.name}
-                                                  <input id="${closeButtonId}" type="button" class="btn-close">
+                                                  <input type="button" class="btn-close removeAttachment">
                                               </div>
                                           </li>`);
 
-            $(`#${closeButtonId}`).click(function () {
+            $(".removeAttachment").click(function () {
                 $(this).parent().parent().remove();
             });
         }
