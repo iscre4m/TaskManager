@@ -59,13 +59,13 @@
 				@switch (@task.Priority)
 				{
 					case Priority.Низкий:
-						<div class="card-header text-success">Низкий приоритет</div>
+						<div class="card-header text-success">Низкий приоритет, до @task.EndDate.Date.ToShortDateString()</div>
 						break;
 					case Priority.Средний:
-						<div class="card-header text-warning">Средний приоритет</div>
+						<div class="card-header text-warning">Средний приоритет, до @task.EndDate.Date.ToShortDateString()</div>
 						break;
 					case Priority.Высокий:
-						<div class="card-header text-danger">Высокий приоритет</div>
+						<div class="card-header text-danger">Высокий приоритет, до @task.EndDate.Date.ToShortDateString()</div>
 						break;
 				}
 				<div class="card-body text-dark">
