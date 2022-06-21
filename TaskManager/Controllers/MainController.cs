@@ -74,30 +74,8 @@ namespace TaskManager.Controllers
             return View(task);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Edit(Models.Task task)
+        private async System.Threading.Tasks.Task RemoveTaskFromDatabase(int id)
         {
-            if(await _context.Tasks.AnyAsync(t => t.Description == task.Description && t.Id != task.Id))
-            {
-                ModelState.AddModelError("", "Задача с таким описанием уже существует");
-
-                return View(task);
-            }
-
-            _context.Tasks.Update(task);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("App", "Main");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Remove(int id)
-        {
-            if (id == 0)
-            {
-                return RedirectToAction("App", "Main");
-            }
-
             Models.Task queryTask = await _context.Tasks.FindAsync(id);
 
             await _context.Entry(queryTask).Collection("Subtasks").LoadAsync();
@@ -111,7 +89,7 @@ namespace TaskManager.Controllers
             {
                 _context.Hashtags.Remove(hashtag);
             }
-            
+
             await _context.Entry(queryTask).Collection("Attachments").LoadAsync();
             foreach (Attachment attachment in queryTask.Attachments)
             {
@@ -119,6 +97,35 @@ namespace TaskManager.Controllers
             }
 
             _context.Tasks.Remove(queryTask);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(Models.Task task)
+        {
+            if(await _context.Tasks.AnyAsync(t => t.Description == task.Description && t.Id != task.Id))
+            {
+                ModelState.AddModelError("", "Задача с таким описанием уже существует");
+
+                return View(task);
+            }
+
+            await RemoveTaskFromDatabase(task.Id);
+            await _context.Tasks.AddAsync(task);
+            (await _context.Users.FirstAsync(u => u.Username == User.Identity.Name)).Tasks.Add(task);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("App", "Main");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Remove(int id)
+        {
+            if (id == 0)
+            {
+                return RedirectToAction("App", "Main");
+            }
+
+            await RemoveTaskFromDatabase(id);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("App", "Main");
