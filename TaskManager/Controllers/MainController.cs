@@ -29,7 +29,7 @@ namespace TaskManager.Controllers
                 await _context.Entry(task).Collection("Subtasks").LoadAsync();
             }
 
-            return View(user.Tasks);
+            return View(user.Tasks.Where(t => !t.IsFinished).ToList());
         }
 
         #region CRUD
@@ -243,5 +243,27 @@ namespace TaskManager.Controllers
         }
 
         #endregion
+
+        [HttpPost]
+        public async Task<IActionResult> Complete(int id)
+        {
+            (await _context.Tasks.FindAsync(id)).IsFinished = true;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("App", "Main");
+        }
+
+        public async Task<IActionResult> CompletedTasks()
+        {
+            User user = await _context.Users.FirstAsync(u => u.Username == User.Identity.Name);
+
+            await _context.Entry(user).Collection("Tasks").LoadAsync();
+            foreach (var task in user.Tasks)
+            {
+                await _context.Entry(task).Collection("Subtasks").LoadAsync();
+            }
+
+            return View("App", user.Tasks.Where(t => t.IsFinished).ToList());
+        }
     }
 }

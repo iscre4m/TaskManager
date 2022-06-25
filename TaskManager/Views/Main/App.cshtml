@@ -37,6 +37,11 @@
 							</ul>
 						</div>
 					</li>
+					<li class="nav-item" title="Завершённые задачи">
+						<a class="btn btn-outline-dark ms-2" asp-action="CompletedTasks">
+							<img class="icon" src="~/icons/check.ico" alt="check"/>
+						</a>
+					</li>
 				</ul>
 			</div>
 			<ul class="navbar-nav">
@@ -84,6 +89,10 @@
 					}
 				</ul>
 				}
+				<form asp-action="Complete" asp-controller="Main">
+					<input type="hidden" name="id" value="@task.Id" />
+					<button type="submit" class="btn btn-outline-dark rounded-0 border-0 w-100">Завершить</button>
+				</form>
 			</div>
 		}
 	</div>
